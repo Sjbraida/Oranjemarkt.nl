@@ -47,7 +47,7 @@ export function Logo({
 ORANJE<span className="text-primary">MARKT</span>
         </span>
         {showTagline && (
-          <span className="mt-1 text-[10px] font-medium tracking-widest text-muted-foreground">
+          <span className="mt-1 hidden text-[10px] font-medium tracking-widest text-muted-foreground sm:block">
             DE DIGITALE BAZAAR VAN NEDERLAND
           </span>
         )}

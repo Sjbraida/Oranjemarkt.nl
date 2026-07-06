@@ -4,6 +4,7 @@ import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import { SearchForm } from "@/components/search-form"
 import { UserMenu } from "@/components/user-menu"
+import { cn } from "@/lib/utils"
 
 type UserInfo = { name: string; email: string; image?: string | null } | null
 
@@ -22,16 +23,22 @@ function IconAction({
   icon: Icon,
   label,
   count,
+  mobile = false,
 }: {
   href: string
   icon: typeof MessageSquare
   label: string
   count?: number
+  mobile?: boolean
 }) {
   return (
     <Link
       href={href}
-      className="relative hidden flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground md:flex"
+      aria-label={label}
+      className={cn(
+        "relative flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground md:flex",
+        mobile ? "flex" : "hidden",
+      )}
     >
       <span className="relative">
         <Icon className="h-5 w-5" />
@@ -41,7 +48,7 @@ function IconAction({
           </span>
         )}
       </span>
-      <span className="text-[11px] font-medium">{label}</span>
+      <span className="hidden text-[11px] font-medium md:block">{label}</span>
     </Link>
   )
 }
@@ -73,12 +80,18 @@ export function TopHeader({
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Link>
 
-        <SearchForm />
+        {/* Inline search on tablet/desktop */}
+        <div className="hidden min-w-0 flex-1 md:flex">
+          <SearchForm />
+        </div>
+
+        {/* Spacer pushes actions right on mobile where search is on its own row */}
+        <div className="flex-1 md:hidden" />
 
         <div className="flex items-center gap-5">
+          <IconAction href="/winkelwagen" icon={ShoppingCart} label="Winkelwagen" count={cartCount} mobile />
           <IconAction href="/berichten" icon={MessageSquare} label="Berichten" count={messagesCount} />
           <IconAction href="/favorieten" icon={Heart} label="Favorieten" count={favoritesCount} />
-          <IconAction href="/winkelwagen" icon={ShoppingCart} label="Winkelwagen" count={cartCount} />
         </div>
 
         {user ? (
@@ -97,6 +110,11 @@ export function TopHeader({
             </Button>
           </div>
         )}
+      </div>
+
+      {/* Full-width search on mobile */}
+      <div className="px-4 pb-3 md:hidden">
+        <SearchForm />
       </div>
 
       <nav className="hidden items-center gap-1 border-t border-border px-6 lg:flex">
