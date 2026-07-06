@@ -9,6 +9,9 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false),
   image: text("image"),
+  // Rollen: "user" | "admin" | "superadmin"
+  role: text("role").notNull().default("user"),
+  banned: boolean("banned").notNull().default(false),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
@@ -225,4 +228,29 @@ export const notifications = pgTable("notifications", {
   href: text("href"),
   read: boolean("read").notNull().default(false),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+// --- Support (interne chat tussen gebruikers en admins) --------------------
+
+export const supportTickets = pgTable("support_tickets", {
+  id: serial("id").primaryKey(),
+  userId: text("userId").notNull(),
+  subject: text("subject").notNull(),
+  category: text("category").notNull().default("algemeen"),
+  status: text("status").notNull().default("open"), // open | in_behandeling | gesloten
+  priority: text("priority").notNull().default("normaal"), // laag | normaal | hoog
+  assignedTo: text("assignedTo"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})
+
+export const supportMessages = pgTable("support_messages", {
+  id: serial("id").primaryKey(),
+  ticketId: integer("ticketId").notNull(),
+  senderId: text("senderId").notNull(),
+  senderRole: text("senderRole").notNull(), // user | admin
+  body: text("body").notNull(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  readByUser: boolean("readByUser").notNull().default(false),
+  readByAdmin: boolean("readByAdmin").notNull().default(false),
 })
