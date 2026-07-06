@@ -3,12 +3,10 @@ import { db } from "@/lib/db"
 import { user } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { headers } from "next/headers"
+import { SUPERADMIN_EMAIL, isAdminRole, type Role } from "@/lib/roles"
 
-// De superadmin-e-mail is altijd superadmin, ongeacht de databasewaarde.
-// Zo raak je nooit de toegang kwijt.
-export const SUPERADMIN_EMAIL = "salimbraida@gmail.com"
-
-export type Role = "user" | "admin" | "superadmin"
+// Herexport zodat server-code ook via @/lib/admin kan blijven importeren.
+export { SUPERADMIN_EMAIL, isAdminRole, type Role }
 
 export type AdminUser = {
   id: string
@@ -43,10 +41,6 @@ export async function getCurrentAdmin(): Promise<AdminUser | null> {
   const role = (isSuperEmail ? "superadmin" : (row.role as Role)) ?? "user"
 
   return { id: row.id, name: row.name, email: row.email, role, banned: row.banned }
-}
-
-export function isAdminRole(role?: Role | null): boolean {
-  return role === "admin" || role === "superadmin"
 }
 
 /** Werpt een fout als de gebruiker geen admin of superadmin is. */

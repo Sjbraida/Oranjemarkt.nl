@@ -2,15 +2,17 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, LayoutGrid, Store, MessageSquare, User } from "lucide-react"
+import { Home, LayoutGrid, Store, MessageSquare, User, ShieldAlert } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function MobileNav({
   messagesCount = 0,
   isLoggedIn = false,
+  isAdmin = false,
 }: {
   messagesCount?: number
   isLoggedIn?: boolean
+  isAdmin?: boolean
 }) {
   const pathname = usePathname()
 
@@ -18,7 +20,9 @@ export function MobileNav({
     { label: "Home", icon: Home, href: "/" },
     { label: "Categorieën", icon: LayoutGrid, href: "/categorieen" },
     { label: "Kramen", icon: Store, href: "/kramen" },
-    { label: "Berichten", icon: MessageSquare, href: isLoggedIn ? "/berichten" : "/sign-in" },
+    ...(isAdmin
+      ? [{ label: "Admin", icon: ShieldAlert, href: "/admin" }]
+      : [{ label: "Berichten", icon: MessageSquare, href: isLoggedIn ? "/berichten" : "/sign-in" }]),
     { label: isLoggedIn ? "Account" : "Inloggen", icon: User, href: isLoggedIn ? "/dashboard" : "/sign-in" },
   ]
 

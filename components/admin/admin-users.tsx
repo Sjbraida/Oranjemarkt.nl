@@ -5,7 +5,7 @@ import { Search, Ban, ShieldCheck, Crown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { adminSetUserRole, adminSetUserBanned } from "@/app/actions/admin"
-import { SUPERADMIN_EMAIL, type Role } from "@/lib/admin"
+import { SUPERADMIN_EMAIL, type Role } from "@/lib/roles"
 
 export type AdminUserRow = {
   id: string

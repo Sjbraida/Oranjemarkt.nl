@@ -6,7 +6,7 @@ import { Search, Trash2, ExternalLink, Star, StarOff } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { adminDeleteStore, adminSetStoreFeatured } from "@/app/actions/admin"
-import type { Role } from "@/lib/admin"
+import type { Role } from "@/lib/roles"
 
 export type AdminStore = {
   id: number
