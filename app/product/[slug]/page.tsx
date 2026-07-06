@@ -7,6 +7,7 @@ import { ChatDialog } from "@/components/chat-dialog"
 import { ProductGallery } from "@/components/product-gallery"
 import { ProductPurchase } from "@/components/product-purchase"
 import { ProductsGrid } from "@/components/products-grid"
+import { resolveHall, HallIcon } from "@/components/categories-section"
 import { formatPrice } from "@/lib/format"
 import {
   getProductBySlug,
@@ -59,6 +60,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     text: r.text,
   }))
   const avgRating = ratingInfo.count > 0 ? ratingInfo.average.toFixed(1) : "–"
+  const hall = resolveHall(product.category).hall
 
   return (
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
@@ -68,7 +70,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Link>
         <ChevronRight className="h-4 w-4" />
         <Link href={`/categorie/${encodeURIComponent(product.category)}`} className="hover:text-foreground">
-          {product.category}
+          {hall ? `Hal ${hall} · ${product.category}` : product.category}
         </Link>
         <ChevronRight className="h-4 w-4" />
         <span className="text-foreground">{product.name}</span>
@@ -79,7 +81,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-medium text-primary">{product.category}</p>
+            <Link
+              href={`/categorie/${encodeURIComponent(product.category)}`}
+              className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            >
+              <HallIcon className="h-3.5 w-3.5" />
+              {hall ? `Hal ${hall} · ${product.category}` : product.category}
+            </Link>
             <span className="flex items-center gap-1 text-sm">
               <Star className="h-4 w-4 fill-primary text-primary" />
               <span className="font-semibold text-foreground">{avgRating}</span>

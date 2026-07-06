@@ -101,11 +101,11 @@ export function TopHeader({
             <Button
               render={<Link href="/sign-in" />}
               variant="outline"
-              className="hidden border-border bg-transparent font-semibold sm:inline-flex"
+              className="border-border bg-transparent font-semibold"
             >
               Inloggen
             </Button>
-            <Button render={<Link href="/sign-up" />} className="font-semibold">
+            <Button render={<Link href="/sign-up" />} className="hidden font-semibold sm:inline-flex">
               Registreren
             </Button>
           </div>
