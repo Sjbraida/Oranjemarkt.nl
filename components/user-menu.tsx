@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ChevronDown, LayoutDashboard, User, Megaphone, Heart, LogOut, Package } from "lucide-react"
+import { ChevronDown, LayoutDashboard, User, Megaphone, Heart, LogOut, Package, LifeBuoy, ShieldAlert } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
 
 type UserInfo = { name: string; email: string; image?: string | null }
 
-export function UserMenu({ user }: { user: UserInfo }) {
+export function UserMenu({ user, isAdmin = false }: { user: UserInfo; isAdmin?: boolean }) {
   const router = useRouter()
   const initials = user.name
     .split(" ")
@@ -68,6 +68,17 @@ export function UserMenu({ user }: { user: UserInfo }) {
         <DropdownMenuItem render={<Link href="/favorieten" />}>
           <Heart className="mr-2 h-4 w-4" /> Favorieten
         </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/support" />}>
+          <LifeBuoy className="mr-2 h-4 w-4" /> Hulp &amp; support
+        </DropdownMenuItem>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem render={<Link href="/admin" />} className="font-semibold text-primary focus:text-primary">
+              <ShieldAlert className="mr-2 h-4 w-4" /> Admin portaal
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
           <LogOut className="mr-2 h-4 w-4" /> Uitloggen

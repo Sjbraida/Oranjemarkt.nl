@@ -58,11 +58,13 @@ export function TopHeader({
   favoritesCount = 0,
   cartCount = 0,
   messagesCount = 0,
+  isAdmin = false,
 }: {
   user?: UserInfo
   favoritesCount?: number
   cartCount?: number
   messagesCount?: number
+  isAdmin?: boolean
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
@@ -95,7 +97,7 @@ export function TopHeader({
         </div>
 
         {user ? (
-          <UserMenu user={user} />
+          <UserMenu user={user} isAdmin={isAdmin} />
         ) : (
           <div className="flex shrink-0 items-center gap-2">
             <Button
