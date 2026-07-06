@@ -65,6 +65,38 @@ export function getCategory(label: string): Category | undefined {
   return categories.find((c) => c.label.toLowerCase() === label.toLowerCase())
 }
 
+// Oudere/afwijkende categorienamen koppelen aan de juiste hal.
+const CATEGORY_ALIASES: Record<string, string> = {
+  "kleding & mode": "Mode",
+  "kleding": "Mode",
+  "mode & kleding": "Mode",
+  "sieraden": "Verzamelen",
+  "kunst & ambacht": "Verzamelen",
+  "kunst & verzamelobjecten": "Verzamelen",
+  "wonen & interieur": "Meubels",
+  "wonen & decoratie": "Meubels",
+  "interieur": "Meubels",
+  "boeken & media": "Boeken",
+  "speelgoed": "Kinderen",
+  "eten & drinken": "Overig",
+  "algemeen": "Overig",
+}
+
+/**
+ * Zet elke categorienaam om naar een hal. Valt terug op "Overig" (Hal 22)
+ * zodat elk product altijd een halnummer heeft.
+ */
+export function resolveHall(label: string): Category {
+  const direct = getCategory(label)
+  if (direct) return direct
+  const aliasTarget = CATEGORY_ALIASES[label.toLowerCase()]
+  if (aliasTarget) {
+    const aliased = getCategory(aliasTarget)
+    if (aliased) return aliased
+  }
+  return categories[categories.length - 1] // "Overig"
+}
+
 export function CategoriesSection() {
   return (
     <section className="flex flex-col gap-4">

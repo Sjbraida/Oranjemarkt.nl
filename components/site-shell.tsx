@@ -31,7 +31,7 @@ export async function SiteShell({
         <AppSidebar favoritesCount={favoritesCount} messagesCount={messagesCount} />
         <main className="min-w-0 flex-1 px-4 py-6 pb-24 md:px-6 lg:pb-6">{children}</main>
       </div>
-      <MobileNav messagesCount={messagesCount} />
+      <MobileNav messagesCount={messagesCount} isLoggedIn={!!user} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { Eye, Pencil, Trash2, Plus, X, Loader2, Copy, EyeOff } from "lucide-reac
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format"
+import { categories } from "@/components/categories-section"
 import {
   createProduct,
   updateProduct,
@@ -28,23 +29,15 @@ export type ManagedProduct = {
   status: "draft" | "published"
 }
 
-const CATEGORIES = [
-  "Eten & Drinken",
-  "Kleding & Mode",
-  "Sieraden",
-  "Kunst & Ambacht",
-  "Wonen & Interieur",
-  "Boeken & Media",
-  "Speelgoed",
-  "Elektronica",
-  "Algemeen",
-]
+// Gebruik dezelfde "hallen" als de rest van de bazaar zodat elk product een hal krijgt.
+// De waarde is de kale label (zoals opgeslagen), de weergave toont het halnummer.
+const CATEGORY_OPTIONS = categories.map((c) => ({ value: c.label, label: `Hal ${c.hall} – ${c.label}` }))
 
 const EMPTY: ProductInput = {
   name: "",
   price: 0,
   oldPrice: null,
-  category: "Algemeen",
+  category: "Overig",
   description: "",
   image: "",
   stock: 1,
@@ -208,7 +201,7 @@ function ProductDialog({
           stock: product.stock,
           status: product.status,
         }
-      : { ...EMPTY, category: defaultCategory || "Algemeen" },
+      : { ...EMPTY, category: defaultCategory || "Overig" },
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -252,9 +245,9 @@ function ProductDialog({
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 className="h-11 w-full rounded-md border border-border bg-background px-3 text-base text-foreground outline-none focus:border-primary"
               >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                {CATEGORY_OPTIONS.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
                   </option>
                 ))}
               </select>

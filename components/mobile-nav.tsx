@@ -5,16 +5,22 @@ import { usePathname } from "next/navigation"
 import { Home, LayoutGrid, Store, MessageSquare, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const items = [
-  { label: "Home", icon: Home, href: "/" },
-  { label: "Categorieën", icon: LayoutGrid, href: "/categorieen" },
-  { label: "Kramen", icon: Store, href: "/kramen" },
-  { label: "Berichten", icon: MessageSquare, href: "/berichten" },
-  { label: "Account", icon: User, href: "/dashboard" },
-]
-
-export function MobileNav({ messagesCount = 0 }: { messagesCount?: number }) {
+export function MobileNav({
+  messagesCount = 0,
+  isLoggedIn = false,
+}: {
+  messagesCount?: number
+  isLoggedIn?: boolean
+}) {
   const pathname = usePathname()
+
+  const items = [
+    { label: "Home", icon: Home, href: "/" },
+    { label: "Categorieën", icon: LayoutGrid, href: "/categorieen" },
+    { label: "Kramen", icon: Store, href: "/kramen" },
+    { label: "Berichten", icon: MessageSquare, href: isLoggedIn ? "/berichten" : "/sign-in" },
+    { label: isLoggedIn ? "Account" : "Inloggen", icon: User, href: isLoggedIn ? "/dashboard" : "/sign-in" },
+  ]
 
   return (
     <nav
