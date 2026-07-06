@@ -10,6 +10,23 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Logo } from "@/components/logo"
 
+function translateAuthError(message?: string, status?: number): string {
+  const m = (message ?? "").toLowerCase()
+  if (m.includes("invalid") && (m.includes("email") || m.includes("password"))) {
+    return "Onjuist e-mailadres of wachtwoord."
+  }
+  if (m.includes("already") || m.includes("exists") || status === 422) {
+    return "Er bestaat al een account met dit e-mailadres."
+  }
+  if (m.includes("origin") || m.includes("forbidden") || status === 403) {
+    return "Inloggen werd geweigerd door de server. Ververs de pagina en probeer het opnieuw."
+  }
+  if (m.includes("network") || m.includes("fetch") || m.includes("failed")) {
+    return "Kan geen verbinding maken. Controleer je internetverbinding en probeer het opnieuw."
+  }
+  return message || "Er ging iets mis. Probeer het opnieuw."
+}
+
 export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -27,19 +44,24 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     setError(null)
     setLoading(true)
 
-    const { error } = isSignUp
-      ? await authClient.signUp.email({ email, password, name })
-      : await authClient.signIn.email({ email, password })
+    try {
+      const { error } = isSignUp
+        ? await authClient.signUp.email({ email, password, name })
+        : await authClient.signIn.email({ email, password })
 
-    setLoading(false)
+      setLoading(false)
 
-    if (error) {
-      setError(error.message ?? "Er ging iets mis")
-      return
+      if (error) {
+        setError(translateAuthError(error.message, error.status))
+        return
+      }
+
+      router.push(redirectTo)
+      router.refresh()
+    } catch {
+      setLoading(false)
+      setError("Kan geen verbinding maken. Controleer je internetverbinding en probeer het opnieuw.")
     }
-
-    router.push(redirectTo)
-    router.refresh()
   }
 
   return (

@@ -18,6 +18,9 @@ export const auth = betterAuth({
     ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
+    // Sta alle Vercel preview-/deploy-domeinen toe zodat inloggen op gedeelde
+    // vercel.app-links (ook op mobiel) niet als "untrusted origin" wordt geweigerd.
+    "https://*.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
   ],
