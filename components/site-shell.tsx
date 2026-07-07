@@ -2,6 +2,7 @@ import type React from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { TopHeader } from "@/components/top-header"
 import { MobileNav } from "@/components/mobile-nav"
+import { PresenceTracker } from "@/components/presence-tracker"
 import { getCartCount, getUnreadMessageCount } from "@/lib/queries"
 import { getCurrentAdmin, isAdminRole } from "@/lib/admin"
 
@@ -24,6 +25,7 @@ export async function SiteShell({
 
   return (
     <div className="min-h-screen bg-background">
+      <PresenceTracker />
       <TopHeader
         user={user}
         favoritesCount={favoritesCount}

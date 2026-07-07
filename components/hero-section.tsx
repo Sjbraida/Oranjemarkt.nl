@@ -1,14 +1,43 @@
+"use client"
+
 import Link from "next/link"
-import { Store, Users, ShieldCheck } from "lucide-react"
+import { Store, Users, BadgeCheck } from "lucide-react"
+import useSWR from "swr"
 import { Button } from "@/components/ui/button"
+import type { HomeStats } from "@/lib/live"
 
-const stats = [
-  { icon: Store, value: "2.400+", label: "Actieve kramen" },
-  { icon: Users, value: "180K", label: "Bezoekers p/m" },
-  { icon: ShieldCheck, value: "0%", label: "Commissie" },
-]
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-export function HeroSection() {
+export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
+  const { data } = useSWR<HomeStats>("/api/home-stats", fetcher, {
+    fallbackData: initialStats,
+    refreshInterval: 15_000,
+    revalidateOnFocus: true,
+  })
+
+  const stats = data ?? initialStats
+
+  const items = [
+    {
+      icon: Store,
+      value: stats.activeStores.toLocaleString("nl-NL"),
+      label: "Actieve kramen",
+      live: false,
+    },
+    {
+      icon: Users,
+      value: stats.liveVisitors.toLocaleString("nl-NL"),
+      label: "Bezoekers nu online",
+      live: true,
+    },
+    {
+      icon: BadgeCheck,
+      value: stats.activeSubscriptions.toLocaleString("nl-NL"),
+      label: "Actieve abonnementen",
+      live: false,
+    },
+  ]
+
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -42,10 +71,16 @@ export function HeroSection() {
           </Button>
         </div>
         <div className="mt-2 flex flex-wrap gap-6">
-          {stats.map((s) => (
+          {items.map((s) => (
             <div key={s.label} className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-primary backdrop-blur">
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-primary backdrop-blur">
                 <s.icon className="h-4 w-4" />
+                {s.live && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
+                  </span>
+                )}
               </span>
               <div className="flex flex-col leading-none">
                 <span className="text-base font-bold text-foreground">{s.value}</span>

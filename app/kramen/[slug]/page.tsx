@@ -5,7 +5,6 @@ import { StoreTabs } from "@/components/store-tabs"
 import { FollowButton } from "@/components/follow-button"
 import { ChatDialog } from "@/components/chat-dialog"
 import { getStoreMeta } from "@/lib/store-extras"
-import { StorePresence } from "@/components/store-presence"
 import {
   getStoreBySlug,
   getProductsByStore,
@@ -63,7 +62,6 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
   return (
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
-      <StorePresence storeId={store.id} />
       <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-card">
         <div className="relative h-44 md:h-64">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Star } from "lucide-react"
-import { formatPrice } from "@/lib/format"
 
 export type StoreCardData = {
   id: number
@@ -17,15 +16,8 @@ export type StoreCardData = {
   image: string
 }
 
-export type StoreLive = {
-  visitors: number
-  revenueToday: number
-  commissionToday: number
-}
-
-export function StoreCard({ store, live }: { store: StoreCardData; live?: StoreLive }) {
+export function StoreCard({ store }: { store: StoreCardData }) {
   const isPremium = store.badge?.toUpperCase() === "PREMIUM"
-  const visitors = live?.visitors ?? 0
   return (
     <Link
       href={`/kramen/${store.slug}`}
@@ -35,15 +27,6 @@ export function StoreCard({ store, live }: { store: StoreCardData; live?: StoreL
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={store.image || "/placeholder.svg"} alt={store.name} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-card/70 to-transparent" />
-        {visitors > 0 && (
-          <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1 text-[11px] font-semibold text-foreground backdrop-blur">
-            <span className="relative flex h-2 w-2" aria-hidden>
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-            </span>
-            {visitors} <span className="font-normal text-muted-foreground">nu online</span>
-          </span>
-        )}
         {store.badge && (
           <span
             className={
@@ -75,18 +58,6 @@ export function StoreCard({ store, live }: { store: StoreCardData; live?: StoreL
           <span>{store.productCount} producten</span>
           <span>{store.followers} volgers</span>
         </div>
-        {live && (live.revenueToday > 0 || visitors > 0) && (
-          <div className="flex items-center justify-between rounded-lg bg-secondary/60 px-3 py-2 text-xs">
-            <span className="flex flex-col">
-              <span className="text-muted-foreground">Omzet vandaag</span>
-              <span className="font-semibold text-foreground">{formatPrice(live.revenueToday)}</span>
-            </span>
-            <span className="flex flex-col text-right">
-              <span className="text-muted-foreground">Commissie</span>
-              <span className="font-semibold text-primary">{formatPrice(live.commissionToday)}</span>
-            </span>
-          </div>
-        )}
       </div>
     </Link>
   )

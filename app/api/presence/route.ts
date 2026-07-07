@@ -7,14 +7,13 @@ export const dynamic = "force-dynamic"
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null)
-    const storeId = Number(body?.storeId)
     const token = typeof body?.token === "string" ? body.token.slice(0, 64) : ""
 
-    if (!Number.isFinite(storeId) || storeId <= 0 || !token) {
+    if (!token) {
       return NextResponse.json({ ok: false, error: "Ongeldige aanvraag" }, { status: 400 })
     }
 
-    await recordPresence(storeId, token)
+    await recordPresence(token)
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 })

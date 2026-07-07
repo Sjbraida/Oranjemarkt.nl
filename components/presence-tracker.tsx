@@ -4,10 +4,10 @@ import { useEffect } from "react"
 import { getVisitorToken } from "@/lib/visitor-token"
 
 /**
- * Stuurt heartbeats zolang de bezoeker deze kraam bekijkt, zodat de kraam
- * live als "actief bekeken" verschijnt op de kramen-pagina. Rendert niets.
+ * Stuurt site-brede heartbeats zolang de bezoeker de site bekijkt, zodat het
+ * live aantal actieve bezoekers op de homepage klopt. Rendert niets.
  */
-export function StorePresence({ storeId }: { storeId: number }) {
+export function PresenceTracker() {
   useEffect(() => {
     const token = getVisitorToken()
     if (!token) return
@@ -16,17 +16,16 @@ export function StorePresence({ storeId }: { storeId: number }) {
 
     const beat = () => {
       if (stopped || document.visibilityState === "hidden") return
-      // keepalive zodat de laatste heartbeat ook bij het sluiten meegaat
       fetch("/api/presence", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeId, token }),
+        body: JSON.stringify({ token }),
         keepalive: true,
       }).catch(() => {})
     }
 
     beat()
-    const interval = setInterval(beat, 20_000)
+    const interval = setInterval(beat, 25_000)
     const onVisible = () => document.visibilityState === "visible" && beat()
     document.addEventListener("visibilitychange", onVisible)
 
@@ -35,7 +34,7 @@ export function StorePresence({ storeId }: { storeId: number }) {
       clearInterval(interval)
       document.removeEventListener("visibilitychange", onVisible)
     }
-  }, [storeId])
+  }, [])
 
   return null
 }

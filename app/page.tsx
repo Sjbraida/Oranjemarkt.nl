@@ -13,14 +13,18 @@ import {
   getFavoriteProductIds,
   getCurrentUser,
 } from "@/lib/queries"
+import { getHomeStats } from "@/lib/live"
+
+export const dynamic = "force-dynamic"
 
 export default async function Page() {
-  const [featured, topStores, newest, favoriteIds, user] = await Promise.all([
+  const [featured, topStores, newest, favoriteIds, user, homeStats] = await Promise.all([
     getFeaturedStores(),
     getTopStores(5),
     getNewestProducts(6),
     getFavoriteProductIds(),
     getCurrentUser(),
+    getHomeStats(),
   ])
 
   const isLoggedIn = !!user
@@ -29,7 +33,7 @@ export default async function Page() {
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
       <div className="flex gap-6">
         <div className="flex min-w-0 flex-1 flex-col gap-8">
-          <HeroSection />
+          <HeroSection initialStats={homeStats} />
           <CategoriesSection />
           <FeaturedStores stores={featured} />
           <NoCommission />
