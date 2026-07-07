@@ -42,6 +42,7 @@ type StoreInfo = {
   website: string | null
   instagram: string | null
   facebook: string | null
+  image: string
   bannerImage: string | null
 }
 type Order = { id: string; product: string; buyer: string; date: string; amount: number; status: string }
@@ -367,6 +368,8 @@ export function DashboardView({
               website: store.website,
               instagram: store.instagram,
               facebook: store.facebook,
+              image: store.image,
+              bannerImage: store.bannerImage,
             }}
           />
         )}

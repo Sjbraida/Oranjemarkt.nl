@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation"
-import { Star, MapPin, Package, Users, ShoppingBag, Clock, BadgeCheck, Share2 } from "lucide-react"
+import { Star, MapPin, Package, Users, ShoppingBag, Clock, BadgeCheck } from "lucide-react"
 import { SiteShell } from "@/components/site-shell"
 import { StoreTabs } from "@/components/store-tabs"
 import { FollowButton } from "@/components/follow-button"
 import { ChatDialog } from "@/components/chat-dialog"
+import { ShareButton } from "@/components/share-button"
 import { getStoreMeta } from "@/lib/store-extras"
 import {
   getStoreBySlug,
@@ -63,9 +64,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   return (
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
       <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="relative h-44 md:h-64">
+        <div className="relative aspect-[3/1] max-h-64 w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={store.image || "/placeholder.svg"} alt={`Banner van ${store.name}`} className="h-full w-full object-cover" />
+          <img
+            src={store.bannerImage || store.image || "/placeholder.svg"}
+            alt={`Banner van ${store.name}`}
+            className="h-full w-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
           {store.badge && (
             <span
@@ -84,8 +89,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         <div className="relative px-5 pb-5">
           <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-4">
-              <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-border bg-background px-1 text-center text-[10px] font-bold leading-tight text-primary shadow-lg">
-                {store.logoText}
+              <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-background px-1 text-center text-[10px] font-bold leading-tight text-primary shadow-lg">
+                {store.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={store.image || "/placeholder.svg"} alt={`Logo van ${store.name}`} className="h-full w-full object-cover" />
+                ) : (
+                  store.logoText
+                )}
               </span>
               <div className="mb-1">
                 <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
@@ -106,12 +116,12 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
             <div className="flex flex-wrap gap-2">
               <FollowButton storeId={store.id} initialFollowing={following} isLoggedIn={!!user} />
               <ChatDialog storeId={store.id} sellerName={store.name} triggerLabel="Chat" isLoggedIn={!!user} />
-              <button
-                aria-label="Deel winkel"
-                className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:border-primary/50 hover:text-primary"
-              >
-                <Share2 className="h-5 w-5" />
-              </button>
+              <ShareButton
+                title={store.name}
+                text={`Bekijk ${store.name} op Oranjemarkt`}
+                url={`/kramen/${store.slug}`}
+                label="Deel winkel"
+              />
             </div>
           </div>
 

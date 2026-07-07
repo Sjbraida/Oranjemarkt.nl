@@ -123,6 +123,7 @@ export default async function DashboardPage({
     website: store.website,
     instagram: store.instagram,
     facebook: store.facebook,
+    image: store.image,
     bannerImage: store.bannerImage,
   }
 
