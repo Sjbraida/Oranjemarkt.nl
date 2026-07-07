@@ -97,16 +97,26 @@ export function resolveHall(label: string): Category {
   return categories[categories.length - 1] // "Overig"
 }
 
+// Toon per schermbreedte precies maximaal 3 rijen. De kolommen verschillen
+// (3/4/6/8), dus 3 rijen = 9/12/18/24 items. Items daarboven worden verborgen
+// en zijn te vinden via "Alle categorieën".
+function rowLimitClass(index: number): string {
+  if (index < 9) return "" // altijd zichtbaar (3 rijen bij 3 kolommen)
+  if (index < 12) return "hidden sm:flex" // 4e t/m start: pas vanaf sm (3 rijen bij 4 kolommen)
+  if (index < 18) return "hidden lg:flex" // pas vanaf lg (3 rijen bij 6 kolommen)
+  return "hidden xl:flex" // pas vanaf xl (3 rijen bij 8 kolommen)
+}
+
 export function CategoriesSection() {
   return (
     <section className="flex flex-col gap-4">
       <SectionHeader title="Ontdek de bazaar" action="Alle categorieën" href="/categorieen" />
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-        {categories.map((cat) => (
+        {categories.map((cat, index) => (
           <Link
             key={cat.label}
             href={`/categorie/${encodeURIComponent(cat.label)}`}
-            className="group relative flex flex-col items-center gap-2.5 rounded-xl border border-border bg-card p-4 text-center transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-sidebar-accent"
+            className={`group relative flex-col items-center gap-2.5 rounded-xl border border-border bg-card p-4 text-center transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-sidebar-accent ${rowLimitClass(index) || "flex"}`}
           >
             <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
               <Landmark className="h-2.5 w-2.5" />
