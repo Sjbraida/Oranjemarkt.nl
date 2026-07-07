@@ -95,6 +95,7 @@ export async function getAllStoresAdmin() {
       plan: stores.plan,
       productCount: stores.productCount,
       rating: stores.rating,
+      featured: stores.featured,
       ownerId: stores.ownerId,
       ownerName: user.name,
       ownerEmail: user.email,

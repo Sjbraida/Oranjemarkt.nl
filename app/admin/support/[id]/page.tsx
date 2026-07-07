@@ -9,7 +9,7 @@ import { TicketChat } from "@/components/support/ticket-chat"
 export const metadata = { title: "Ticket | Admin" }
 
 export default async function AdminTicketPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdmin()
+  const admin = await requireAdmin()
   const { id } = await params
   const ticketId = Number.parseInt(id)
   if (Number.isNaN(ticketId)) notFound()
@@ -31,7 +31,13 @@ export default async function AdminTicketPage({ params }: { params: Promise<{ id
         <h1 className="text-xl font-bold text-foreground">{ticket.subject}</h1>
         <p className="text-sm capitalize text-muted-foreground">Categorie: {ticket.category}</p>
       </div>
-      <TicketChat ticketId={ticketId} initialMessages={messages} side="admin" status={ticket.status} />
+      <TicketChat
+        ticketId={ticketId}
+        initialMessages={messages}
+        side="admin"
+        status={ticket.status}
+        currentUserId={admin.id}
+      />
     </div>
   )
 }

@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Search, Pencil, Trash2, ExternalLink, X, Check } from "lucide-react"
+import { Search, Pencil, Trash2, ExternalLink, X, Check, Power, PowerOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import { adminUpdateProduct, adminDeleteProduct } from "@/app/actions/admin"
+import { adminUpdateProduct, adminDeleteProduct, adminSetProductStatus } from "@/app/actions/admin"
 
 export type AdminProduct = {
   id: number
@@ -24,10 +24,11 @@ export type AdminProduct = {
 
 export function AdminProducts({ products }: { products: AdminProduct[] }) {
   const [query, setQuery] = useState("")
+  const [rows, setRows] = useState(products)
   const [editing, setEditing] = useState<AdminProduct | null>(null)
   const [busy, setBusy] = useState<number | null>(null)
 
-  const filtered = products.filter(
+  const filtered = rows.filter(
     (p) =>
       p.name.toLowerCase().includes(query.toLowerCase()) ||
       (p.storeName ?? "").toLowerCase().includes(query.toLowerCase()) ||
@@ -39,9 +40,29 @@ export function AdminProducts({ products }: { products: AdminProduct[] }) {
     setBusy(id)
     try {
       await adminDeleteProduct(id)
+      setRows((r) => r.filter((p) => p.id !== id))
     } finally {
       setBusy(null)
     }
+  }
+
+  const toggleStatus = async (p: AdminProduct) => {
+    const next = p.status === "published" ? "draft" : "published"
+    setBusy(p.id)
+    // Optimistisch bijwerken.
+    setRows((r) => r.map((x) => (x.id === p.id ? { ...x, status: next } : x)))
+    try {
+      await adminSetProductStatus(p.id, next)
+    } catch {
+      // Terugdraaien bij fout.
+      setRows((r) => r.map((x) => (x.id === p.id ? { ...x, status: p.status } : x)))
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  const applyEdit = (updated: AdminProduct) => {
+    setRows((r) => r.map((x) => (x.id === updated.id ? updated : x)))
   }
 
   return (
@@ -104,6 +125,20 @@ export function AdminProducts({ products }: { products: AdminProduct[] }) {
                   </Link>
                 )}
                 <button
+                  onClick={() => toggleStatus(p)}
+                  disabled={busy === p.id}
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-md border border-border",
+                    p.status === "published"
+                      ? "text-primary hover:bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                  aria-label={p.status === "published" ? "Product uitzetten" : "Product publiceren"}
+                  title={p.status === "published" ? "Uitzetten (op concept zetten)" : "Publiceren"}
+                >
+                  {p.status === "published" ? <Power className="h-4 w-4" /> : <PowerOff className="h-4 w-4" />}
+                </button>
+                <button
                   onClick={() => setEditing(p)}
                   className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground"
                   aria-label="Bewerk"
@@ -124,12 +159,22 @@ export function AdminProducts({ products }: { products: AdminProduct[] }) {
         )}
       </div>
 
-      {editing && <EditModal product={editing} onClose={() => setEditing(null)} />}
+      {editing && (
+        <EditModal product={editing} onClose={() => setEditing(null)} onSaved={applyEdit} />
+      )}
     </div>
   )
 }
 
-function EditModal({ product, onClose }: { product: AdminProduct; onClose: () => void }) {
+function EditModal({
+  product,
+  onClose,
+  onSaved,
+}: {
+  product: AdminProduct
+  onClose: () => void
+  onSaved: (p: AdminProduct) => void
+}) {
   const [name, setName] = useState(product.name)
   const [price, setPrice] = useState(String(product.price))
   const [stock, setStock] = useState(String(product.stock))
@@ -138,14 +183,17 @@ function EditModal({ product, onClose }: { product: AdminProduct; onClose: () =>
 
   const handleSave = async () => {
     setSaving(true)
+    const nextPrice = Number.parseFloat(price) || product.price
+    const nextStock = Number.parseInt(stock) || 0
     try {
       await adminUpdateProduct({
         id: product.id,
         name,
-        price: Number.parseFloat(price) || product.price,
-        stock: Number.parseInt(stock) || 0,
+        price: nextPrice,
+        stock: nextStock,
         status,
       })
+      onSaved({ ...product, name, price: nextPrice, stock: nextStock, status })
       onClose()
     } finally {
       setSaving(false)

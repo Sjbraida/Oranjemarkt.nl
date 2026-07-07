@@ -109,3 +109,53 @@ export async function updateTicketStatus(ticketId: number, status: string) {
   revalidatePath("/admin/support")
   return { ok: true }
 }
+
+/**
+ * Verwijder één bericht uit een ticket.
+ * Een admin mag elk bericht verwijderen; een gebruiker (koper) alleen zijn eigen bericht.
+ */
+export async function deleteSupportMessage(input: { messageId: number; asAdmin?: boolean }) {
+  const rows = await db.select().from(supportMessages).where(eq(supportMessages.id, input.messageId)).limit(1)
+  const message = rows[0]
+  if (!message) throw new Error("Bericht niet gevonden")
+
+  if (input.asAdmin) {
+    await requireAdmin()
+  } else {
+    const user = await requireUser()
+    // Gebruiker mag alleen zijn eigen (user-)bericht verwijderen.
+    if (message.senderRole !== "user" || message.senderId !== user.id) {
+      throw new Error("Je kunt alleen je eigen bericht verwijderen")
+    }
+  }
+
+  await db.delete(supportMessages).where(eq(supportMessages.id, input.messageId))
+
+  revalidatePath(`/support/${message.ticketId}`)
+  revalidatePath(`/admin/support/${message.ticketId}`)
+  revalidatePath("/admin/support")
+  return { ok: true }
+}
+
+/**
+ * Verwijder een volledig ticket met alle berichten.
+ * Een admin mag elk ticket verwijderen; een gebruiker (koper) alleen zijn eigen ticket.
+ */
+export async function deleteSupportTicket(input: { ticketId: number; asAdmin?: boolean }) {
+  const ticket = await getTicketById(input.ticketId)
+  if (!ticket) throw new Error("Ticket niet gevonden")
+
+  if (input.asAdmin) {
+    await requireAdmin()
+  } else {
+    const user = await requireUser()
+    if (ticket.userId !== user.id) throw new Error("Geen toegang tot dit ticket")
+  }
+
+  await db.delete(supportMessages).where(eq(supportMessages.ticketId, input.ticketId))
+  await db.delete(supportTickets).where(eq(supportTickets.id, input.ticketId))
+
+  revalidatePath("/support")
+  revalidatePath("/admin/support")
+  return { ok: true }
+}
