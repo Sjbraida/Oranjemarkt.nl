@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, Loader2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ImageUpload } from "@/components/image-upload"
 import { updateStoreSettings } from "@/app/actions/store"
 
 export type StoreSettings = {
@@ -17,6 +18,8 @@ export type StoreSettings = {
   website: string | null
   instagram: string | null
   facebook: string | null
+  image: string
+  bannerImage: string | null
 }
 
 export function StoreSettingsForm({ store }: { store: StoreSettings }) {
@@ -30,6 +33,8 @@ export function StoreSettingsForm({ store }: { store: StoreSettings }) {
     website: store.website ?? "",
     instagram: store.instagram ?? "",
     facebook: store.facebook ?? "",
+    image: store.image ?? "",
+    bannerImage: store.bannerImage ?? "",
   })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -55,6 +60,22 @@ export function StoreSettingsForm({ store }: { store: StoreSettings }) {
     <form onSubmit={save} className="max-w-xl">
       <h2 className="mb-4 text-lg font-semibold text-foreground">Winkelinstellingen</h2>
       <div className="space-y-4 rounded-xl border border-border bg-card p-5">
+        <ImageUpload
+          label="Bannerafbeelding"
+          value={form.bannerImage}
+          onChange={(url) => setForm({ ...form, bannerImage: url })}
+          aspect="3 / 1"
+          hint="Aanbevolen: breedbeeld (3:1), bijv. 1500×500px. Wordt netjes bijgesneden in het kader."
+        />
+        <div className="max-w-[10rem]">
+          <ImageUpload
+            label="Logo / winkelfoto"
+            value={form.image}
+            onChange={(url) => setForm({ ...form, image: url })}
+            aspect="1 / 1"
+            hint="Vierkant"
+          />
+        </div>
         <Field label="Winkelnaam" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
         <Field label="Categorie" value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
         <Field label="Locatie" value={form.location} onChange={(v) => setForm({ ...form, location: v })} />

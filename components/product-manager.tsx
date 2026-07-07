@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import Link from "next/link"
 import { Eye, Pencil, Trash2, Plus, X, Loader2, Copy, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ImageUpload } from "@/components/image-upload"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format"
 import { categories } from "@/components/categories-section"
@@ -254,11 +255,13 @@ function ProductDialog({
             </div>
             <NumField label="Voorraad" value={form.stock ?? 1} onChange={(v) => setForm({ ...form, stock: v })} />
           </div>
-          <Field
-            label="Afbeelding-URL"
+          <ImageUpload
+            label="Productfoto"
             value={form.image ?? ""}
-            onChange={(v) => setForm({ ...form, image: v })}
-            placeholder="/mijn-product.jpg of https://…"
+            onChange={(url) => setForm({ ...form, image: url })}
+            aspect="1 / 1"
+            hint="Vierkant. Wordt getoond op de winkel- en productpagina."
+            className="max-w-[12rem]"
           />
           <div>
             <label className="mb-1.5 block text-sm font-medium text-foreground">Beschrijving</label>

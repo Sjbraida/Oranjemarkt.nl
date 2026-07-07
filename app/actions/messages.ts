@@ -24,6 +24,47 @@ export async function startConversation(storeId: number) {
   return { conversationId: conv.id }
 }
 
+/**
+ * Haalt de bestaande gespreksberichten op tussen de huidige koper en een winkel.
+ * Maakt géén nieuw gesprek aan als dat nog niet bestaat (retourneert lege lijst).
+ * Markeert binnengekomen berichten meteen als gelezen.
+ */
+export async function getStoreThread(storeId: number) {
+  const user = await requireUser()
+  const existing = await db
+    .select()
+    .from(conversations)
+    .where(and(eq(conversations.buyerId, user.id), eq(conversations.storeId, storeId)))
+    .limit(1)
+
+  if (existing.length === 0) return { conversationId: null as number | null, messages: [] as { id: number; mine: boolean; text: string }[] }
+
+  const conv = existing[0]
+  const rows = await db
+    .select()
+    .from(messages)
+    .where(eq(messages.conversationId, conv.id))
+    .orderBy(messages.createdAt)
+
+  // Markeer binnenkomende berichten als gelezen.
+  await db
+    .update(messages)
+    .set({ readAt: new Date() })
+    .where(
+      and(
+        eq(messages.conversationId, conv.id),
+        sql`${messages.senderId} <> ${user.id}`,
+        sql`${messages.readAt} IS NULL`,
+      ),
+    )
+  revalidatePath("/berichten")
+
+  return {
+    conversationId: conv.id,
+    messages: rows.map((m) => ({ id: m.id, mine: m.senderId === user.id, text: m.body })),
+  }
+}
+
 export async function sendMessage(conversationId: number, body: string) {
   const user = await requireUser()
   const text = body.trim()
