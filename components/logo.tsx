@@ -18,6 +18,10 @@ export function StallIcon({ className }: { className?: string }) {
       {/* posts */}
       <rect x="5" y="9" width="1.6" height="19" fill="currentColor" className="text-primary" />
       <rect x="25.4" y="9" width="1.6" height="19" fill="currentColor" className="text-primary" />
+      {/* Nederlandse vlag in de opening van de kraam */}
+      <rect x="8" y="10.5" width="16" height="2.83" fill="#AE1C28" />
+      <rect x="8" y="13.33" width="16" height="2.83" fill="#FFFFFF" />
+      <rect x="8" y="16.16" width="16" height="2.84" fill="#21468B" />
       {/* counter */}
       <rect x="7" y="20" width="18" height="8" fill="currentColor" className="text-primary/80" />
       <rect x="7" y="20" width="18" height="2" fill="currentColor" className="text-primary" />
