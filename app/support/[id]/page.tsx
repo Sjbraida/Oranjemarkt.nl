@@ -35,7 +35,13 @@ export default async function UserTicketPage({ params }: { params: Promise<{ id:
           <h1 className="text-xl font-bold text-foreground text-balance">{ticket.subject}</h1>
           <p className="text-sm capitalize text-muted-foreground">Categorie: {ticket.category}</p>
         </div>
-        <TicketChat ticketId={ticketId} initialMessages={messages} side="user" status={ticket.status} />
+        <TicketChat
+          ticketId={ticketId}
+          initialMessages={messages}
+          side="user"
+          status={ticket.status}
+          currentUserId={user.id}
+        />
       </div>
     </SiteShell>
   )

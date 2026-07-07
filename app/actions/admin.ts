@@ -34,6 +34,13 @@ export async function adminUpdateProduct(input: {
   return { ok: true }
 }
 
+export async function adminSetProductStatus(id: number, status: "published" | "draft") {
+  await requireAdmin()
+  await db.update(products).set({ status }).where(eq(products.id, id))
+  revalidatePath("/admin/producten")
+  return { ok: true }
+}
+
 export async function adminDeleteProduct(id: number) {
   await requireAdmin()
   await db.delete(products).where(eq(products.id, id))

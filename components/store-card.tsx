@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Star } from "lucide-react"
 
 export type StoreCardData = {
+  id: number
   slug: string
   name: string
   category: string

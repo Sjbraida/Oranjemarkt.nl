@@ -17,6 +17,7 @@ export type AdminStore = {
   plan: string
   productCount: number
   rating: number
+  featured: boolean
   ownerName: string | null
   ownerEmail: string | null
 }
@@ -31,7 +32,9 @@ const PLAN_LABELS: Record<string, string> = {
 export function AdminStores({ stores, role }: { stores: AdminStore[]; role: Role }) {
   const [query, setQuery] = useState("")
   const [busy, setBusy] = useState<number | null>(null)
-  const [featured, setFeatured] = useState<Record<number, boolean>>({})
+  const [featured, setFeatured] = useState<Record<number, boolean>>(() =>
+    Object.fromEntries(stores.map((s) => [s.id, s.featured])),
+  )
 
   const filtered = stores.filter(
     (s) =>
@@ -103,7 +106,7 @@ export function AdminStores({ stores, role }: { stores: AdminStore[]; role: Role
                   {featured[s.id] ? <Star className="h-4 w-4 fill-primary text-primary" /> : <StarOff className="h-4 w-4" />}
                 </button>
                 <Link
-                  href={`/kraam/${s.slug}`}
+                  href={`/kramen/${s.slug}`}
                   className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground"
                   aria-label="Bekijk kraam"
                 >

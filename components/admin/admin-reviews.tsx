@@ -59,7 +59,7 @@ export function AdminReviews({ reviews }: { reviews: AdminReview[] }) {
               <p className="mt-1.5 text-sm text-muted-foreground">{r.text}</p>
               <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                 {r.storeSlug ? (
-                  <Link href={`/kraam/${r.storeSlug}`} className="inline-flex items-center gap-1 text-primary hover:underline">
+                  <Link href={`/kramen/${r.storeSlug}`} className="inline-flex items-center gap-1 text-primary hover:underline">
                     {r.storeName} <ExternalLink className="h-3 w-3" />
                   </Link>
                 ) : (
