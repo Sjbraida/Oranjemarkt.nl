@@ -254,3 +254,20 @@ export const supportMessages = pgTable("support_messages", {
   readByUser: boolean("readByUser").notNull().default(false),
   readByAdmin: boolean("readByAdmin").notNull().default(false),
 })
+
+// --- Live aanwezigheid (echte bezoekers per kraam) -------------------------
+// Elke actieve bezoeker stuurt een heartbeat met een anonieme token.
+// Een kraam is "actief bekeken" als er een rij is met lastSeen in de recente venstertijd.
+
+export const storePresence = pgTable(
+  "store_presence",
+  {
+    id: serial("id").primaryKey(),
+    storeId: integer("storeId").notNull(),
+    token: text("token").notNull(),
+    lastSeen: timestamp("lastSeen").notNull().defaultNow(),
+  },
+  (t) => ({
+    uniqStoreToken: unique("store_presence_store_token_unique").on(t.storeId, t.token),
+  }),
+)
