@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutGrid, MessageSquare, Heart, ShoppingCart, ChevronDown } from "lucide-react"
+import { MessageSquare, Heart, ShoppingCart } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import { SearchForm } from "@/components/search-form"
@@ -71,15 +71,6 @@ export function TopHeader({
       <div className="flex items-center gap-3 px-4 py-3 md:gap-4 md:px-6">
         <Link href="/" className="shrink-0">
           <Logo />
-        </Link>
-
-        <Link
-          href="/categorieen"
-          className="hidden shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-sidebar-accent xl:flex"
-        >
-          <LayoutGrid className="h-4 w-4 text-primary" />
-          Alle categorieën
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Link>
 
         {/* Inline search on tablet/desktop */}

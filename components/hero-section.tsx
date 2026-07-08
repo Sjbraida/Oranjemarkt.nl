@@ -17,24 +17,28 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
 
   const stats = data ?? initialStats
 
+  // Op mobiel: kramen → bezoekers → abonnementen. Op desktop: kramen → abonnementen → bezoekers.
   const items = [
     {
       icon: Store,
       value: stats.activeStores.toLocaleString("nl-NL"),
       label: "Actieve kramen",
       live: false,
+      mdOrder: "md:order-1",
     },
     {
       icon: Users,
       value: stats.liveVisitors.toLocaleString("nl-NL"),
       label: "Bezoekers nu online",
       live: true,
+      mdOrder: "md:order-3",
     },
     {
       icon: BadgeCheck,
       value: stats.activeSubscriptions.toLocaleString("nl-NL"),
       label: "Actieve abonnementen",
       live: false,
+      mdOrder: "md:order-2",
     },
   ]
 
@@ -44,7 +48,7 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
       <img
         src="/hero-bazaar.png"
         alt="Luxe overdekte marktboulevard met verlichte winkels"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-[center_28%]"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
       <div className="relative flex min-h-[380px] flex-col justify-center gap-6 p-8 md:max-w-xl md:p-12">
@@ -70,9 +74,9 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
             Open een kraam
           </Button>
         </div>
-        <div className="mt-2 flex flex-wrap gap-6">
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3">
           {items.map((s) => (
-            <div key={s.label} className="flex items-center gap-2.5">
+            <div key={s.label} className={`flex items-center gap-2.5 ${s.mdOrder}`}>
               <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-primary backdrop-blur">
                 <s.icon className="h-4 w-4" />
                 {s.live && (
