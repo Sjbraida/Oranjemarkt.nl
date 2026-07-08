@@ -8,7 +8,7 @@ import { PhonePreview } from "@/components/phone-preview"
 import { SiteShell } from "@/components/site-shell"
 import {
   getFeaturedStores,
-  getTopStores,
+  getTopRatedStores,
   getNewestProducts,
   getFavoriteProductIds,
   getCurrentUser,
@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic"
 export default async function Page() {
   const [featured, topStores, newest, favoriteIds, user, homeStats] = await Promise.all([
     getFeaturedStores(),
-    getTopStores(5),
+    getTopRatedStores(5),
     getNewestProducts(6),
     getFavoriteProductIds(),
     getCurrentUser(),

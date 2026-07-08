@@ -5,7 +5,7 @@ import { SiteShell } from "@/components/site-shell"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ProfileCard } from "@/components/profile-card"
-import { getCurrentUser, getFavoriteProductIds, getTopStores } from "@/lib/queries"
+import { getCurrentUser, getFavoriteProductIds, getTopRatedStores } from "@/lib/queries"
 
 export const metadata = { title: "Mijn profiel | OranjeMarkt" }
 
@@ -13,7 +13,7 @@ export default async function ProfielPage() {
   const user = await getCurrentUser()
   if (!user) redirect("/sign-in")
 
-  const [favoriteIds, topStores] = await Promise.all([getFavoriteProductIds(), getTopStores(1)])
+  const [favoriteIds, topStores] = await Promise.all([getFavoriteProductIds(), getTopRatedStores(1)])
   const store = topStores[0] ?? null
 
   const memberSince = user.createdAt

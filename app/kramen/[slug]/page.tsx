@@ -1,11 +1,13 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Star, MapPin, Package, Users, ShoppingBag, Clock, BadgeCheck } from "lucide-react"
+import { Star, MapPin, Package, Users, ShoppingBag, Clock, BadgeCheck, Sparkles, ImageIcon } from "lucide-react"
 import { SiteShell } from "@/components/site-shell"
 import { StoreTabs } from "@/components/store-tabs"
 import { FollowButton } from "@/components/follow-button"
 import { ChatDialog } from "@/components/chat-dialog"
 import { ShareButton } from "@/components/share-button"
 import { getStoreMeta } from "@/lib/store-extras"
+import { getPlan } from "@/lib/plans"
 import {
   getStoreBySlug,
   getProductsByStore,
@@ -16,6 +18,7 @@ import {
   getMyReviewForStore,
   isFollowing,
   getFollowerCount,
+  getPublicUser,
 } from "@/lib/queries"
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -23,7 +26,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   const store = await getStoreBySlug(slug)
   if (!store) notFound()
 
-  const [storeProducts, user, favoriteIds, dbReviews, ratingInfo, myReview, following, followerCount] =
+  const [storeProducts, user, favoriteIds, dbReviews, ratingInfo, myReview, following, followerCount, seller] =
     await Promise.all([
       getProductsByStore(store.id),
       getCurrentUser(),
@@ -33,7 +36,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
       getMyReviewForStore(store.id),
       isFollowing(store.id),
       getFollowerCount(store.id),
+      getPublicUser(store.ownerId),
     ])
+
+  const plan = getPlan(store.plan)
+  const isOwner = !!user && user.id === store.ownerId
+  // Een eigen banner is een betaalde functie. Zonder pakket blijft de banner echt leeg.
+  const hasBanner = plan.banner && !!store.bannerImage
 
   const reviews = dbReviews.map((r) => ({
     id: r.id,
@@ -65,13 +74,36 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
       <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-card">
         <div className="relative aspect-[3/1] max-h-64 w-full">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={store.bannerImage || store.image || "/placeholder.svg"}
-            alt={`Banner van ${store.name}`}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+          {hasBanner ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={store.bannerImage || "/placeholder.svg"}
+                alt={`Banner van ${store.name}`}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+            </>
+          ) : (
+            // Geen pakket / geen banner: echt lege banner. De eigenaar ziet een oproep om te abonneren.
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-secondary/60 text-center">
+              {isOwner ? (
+                <>
+                  <ImageIcon className="h-6 w-6 text-muted-foreground" aria-hidden />
+                  <p className="text-sm font-medium text-muted-foreground">Nog geen winkelbanner</p>
+                  <Link
+                    href="/verkoop"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Abonneer voor een eigen banner
+                  </Link>
+                </>
+              ) : (
+                <ImageIcon className="h-6 w-6 text-muted-foreground/50" aria-hidden />
+              )}
+            </div>
+          )}
           {store.badge && (
             <span
               className={
@@ -90,7 +122,10 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           <div className="-mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-4">
               <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-background px-1 text-center text-[10px] font-bold leading-tight text-primary shadow-lg">
-                {store.image ? (
+                {seller?.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={seller.image || "/placeholder.svg"} alt={`Profielfoto van ${seller.name}`} className="h-full w-full object-cover" />
+                ) : store.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={store.image || "/placeholder.svg"} alt={`Logo van ${store.name}`} className="h-full w-full object-cover" />
                 ) : (
