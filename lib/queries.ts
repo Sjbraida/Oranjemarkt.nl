@@ -39,6 +39,16 @@ export async function getTopStores(limit = 5) {
   return db.select().from(stores).orderBy(desc(planRank), desc(stores.rating)).limit(limit)
 }
 
+// Voor de "Top verkopers"-pagina: puur op beoordeling ranken (beste sterren bovenaan),
+// met het aantal reviews als tiebreaker zodat goed beoordeelde én betrouwbare kramen winnen.
+export async function getTopRatedStores(limit = 12) {
+  return db
+    .select()
+    .from(stores)
+    .orderBy(desc(stores.rating), desc(stores.reviews))
+    .limit(limit)
+}
+
 export async function getAllStores() {
   return db.select().from(stores).orderBy(desc(planRank), desc(stores.rating))
 }
