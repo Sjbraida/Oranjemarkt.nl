@@ -47,6 +47,10 @@ export async function subscribeToPlan(input: {
   const storeName = input.storeName.trim()
   if (!storeName) throw new Error("Winkelnaam is verplicht")
 
+  // Badge en homepage-promotie worden automatisch bepaald door het plan.
+  const planBadge = planDef.premiumBadge ? "PREMIUM" : planDef.searchPriority >= 2 ? "TOP VERKOPER" : null
+  const homepagePromo = planDef.homepagePromotion
+
   // Find existing store for this owner
   const existing = await db.select().from(stores).where(eq(stores.ownerId, user.id)).limit(1)
 
@@ -71,6 +75,8 @@ export async function subscribeToPlan(input: {
         description: input.description ?? s.description,
         logoText,
         plan: input.plan,
+        badge: planBadge,
+        featured: homepagePromo,
       })
       .where(eq(stores.id, s.id))
     storeId = s.id
@@ -89,7 +95,8 @@ export async function subscribeToPlan(input: {
         image: "/dutch-market-stall.jpg",
         ownerId: user.id,
         plan: input.plan,
-        featured: false,
+        badge: planBadge,
+        featured: homepagePromo,
       })
       .returning({ id: stores.id, slug: stores.slug })
     storeId = inserted[0].id

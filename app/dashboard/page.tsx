@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { SiteShell } from "@/components/site-shell"
 import { PageHeader } from "@/components/page-header"
 import { DashboardView } from "@/components/dashboard-view"
+import { getPlan } from "@/lib/plans"
 import {
   getCurrentUser,
   getFavoriteProductIds,
@@ -84,6 +85,7 @@ export default async function DashboardPage({
     description: p.description,
     stock: p.stock,
     status: p.status as "draft" | "published",
+    featured: p.featured,
   }))
 
   const orders = orderItems.map((o) => ({
@@ -127,6 +129,10 @@ export default async function DashboardPage({
     bannerImage: store.bannerImage,
   }
 
+  const effectivePlanKey = subscription?.plan ?? store.plan
+  const plan = getPlan(effectivePlanKey)
+  const featuredUsed = productList.filter((p) => p.featured && p.status === "published").length
+
   return (
     <SiteShell user={user} favoritesCount={favoriteIds.length}>
       <PageHeader
@@ -140,6 +146,8 @@ export default async function DashboardPage({
         messages={previews}
         stats={dashStats}
         subscription={subscription ? { plan: subscription.plan, price: subscription.price } : null}
+        plan={plan}
+        featuredUsed={featuredUsed}
         initialSection={initialSection}
       />
     </SiteShell>

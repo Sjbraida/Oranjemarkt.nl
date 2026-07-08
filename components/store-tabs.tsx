@@ -82,8 +82,8 @@ type StoreMeta = {
   socials: { platform: string; handle: string }[]
 }
 
-const TABS = ["Alle producten", "Nieuw", "Aanbiedingen", "Reviews", "Over de winkel"] as const
-type Tab = (typeof TABS)[number]
+const BASE_TABS = ["Alle producten", "Uitgelicht", "Nieuw", "Aanbiedingen", "Reviews", "Over de winkel"] as const
+type Tab = (typeof BASE_TABS)[number]
 
 function Grid({
   products,
@@ -143,15 +143,31 @@ export function StoreTabs({
   const [tab, setTab] = useState<Tab>("Alle producten")
   const safeRating = Number(rating) || 0
 
+  const featured = products.filter((p) => p.featured)
+  // Uitgelichte producten bovenaan tonen in "Alle producten".
+  const allSorted = [...products].sort((a, b) => Number(!!b.featured) - Number(!!a.featured))
   const newest = products.slice(0, 10)
   const deals = products.filter((p) => p.discount)
+
+  // De "Uitgelicht"-tab alleen tonen wanneer er uitgelichte producten zijn.
+  const tabs = BASE_TABS.filter((t) => t !== "Uitgelicht" || featured.length > 0)
 
   return (
     <div>
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-border">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const count =
-            t === "Alle producten" ? products.length : t === "Nieuw" ? newest.length : t === "Aanbiedingen" ? deals.length : t === "Reviews" ? reviewCount : null
+            t === "Alle producten"
+              ? products.length
+              : t === "Uitgelicht"
+                ? featured.length
+                : t === "Nieuw"
+                  ? newest.length
+                  : t === "Aanbiedingen"
+                    ? deals.length
+                    : t === "Reviews"
+                      ? reviewCount
+                      : null
           return (
             <button
               key={t}
@@ -170,7 +186,10 @@ export function StoreTabs({
       </div>
 
       {tab === "Alle producten" && (
-        <Grid products={products} favoriteIds={favoriteIds} isLoggedIn={isLoggedIn} empty="Deze winkel heeft nog geen producten." />
+        <Grid products={allSorted} favoriteIds={favoriteIds} isLoggedIn={isLoggedIn} empty="Deze winkel heeft nog geen producten." />
+      )}
+      {tab === "Uitgelicht" && (
+        <Grid products={featured} favoriteIds={favoriteIds} isLoggedIn={isLoggedIn} empty="Deze winkel heeft nog geen uitgelichte producten." />
       )}
       {tab === "Nieuw" && (
         <Grid products={newest} favoriteIds={favoriteIds} isLoggedIn={isLoggedIn} empty="Nog geen nieuwe producten." />

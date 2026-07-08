@@ -27,12 +27,20 @@ export async function getFeaturedStores() {
   return db.select().from(stores).where(eq(stores.featured, true)).orderBy(desc(stores.rating))
 }
 
+// Sorteert op abonnementsrang (Premium → Winkel → Kraam → Gratis) en dan op rating.
+// Zo krijgen betaalde pakketten echte zoek-/lijstprioriteit.
+const planRank = sql`case ${stores.plan}
+  when 'premium' then 3
+  when 'winkel' then 2
+  when 'kraam' then 1
+  else 0 end`
+
 export async function getTopStores(limit = 5) {
-  return db.select().from(stores).orderBy(desc(stores.rating)).limit(limit)
+  return db.select().from(stores).orderBy(desc(planRank), desc(stores.rating)).limit(limit)
 }
 
 export async function getAllStores() {
-  return db.select().from(stores).orderBy(desc(stores.rating))
+  return db.select().from(stores).orderBy(desc(planRank), desc(stores.rating))
 }
 
 export async function getStoreBySlug(slug: string) {
@@ -78,7 +86,7 @@ export async function searchStores(query: string) {
     .select()
     .from(stores)
     .where(ilike(stores.name, `%${query}%`))
-    .orderBy(desc(stores.rating))
+    .orderBy(desc(planRank), desc(stores.rating))
 }
 
 export async function getCurrentUser() {

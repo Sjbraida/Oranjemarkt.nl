@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Loader2, Check } from "lucide-react"
+import { ArrowUpRight, Loader2, Check, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/image-upload"
 import { updateStoreSettings } from "@/app/actions/store"
@@ -22,7 +22,15 @@ export type StoreSettings = {
   bannerImage: string | null
 }
 
-export function StoreSettingsForm({ store }: { store: StoreSettings }) {
+export function StoreSettingsForm({
+  store,
+  allowBanner = true,
+  onUpgrade,
+}: {
+  store: StoreSettings
+  allowBanner?: boolean
+  onUpgrade?: () => void
+}) {
   const [form, setForm] = useState({
     name: store.name,
     category: store.category,
@@ -60,13 +68,29 @@ export function StoreSettingsForm({ store }: { store: StoreSettings }) {
     <form onSubmit={save} className="max-w-xl">
       <h2 className="mb-4 text-lg font-semibold text-foreground">Winkelinstellingen</h2>
       <div className="space-y-4 rounded-xl border border-border bg-card p-5">
-        <ImageUpload
-          label="Bannerafbeelding"
-          value={form.bannerImage}
-          onChange={(url) => setForm({ ...form, bannerImage: url })}
-          aspect="3 / 1"
-          hint="Aanbevolen: breedbeeld (3:1), bijv. 1500×500px. Wordt netjes bijgesneden in het kader."
-        />
+        {allowBanner ? (
+          <ImageUpload
+            label="Bannerafbeelding"
+            value={form.bannerImage}
+            onChange={(url) => setForm({ ...form, bannerImage: url })}
+            aspect="3 / 1"
+            hint="Aanbevolen: breedbeeld (3:1), bijv. 1500×500px. Wordt netjes bijgesneden in het kader."
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-5 text-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Lock className="h-5 w-5" />
+            </span>
+            <p className="text-sm font-semibold text-foreground">Eigen banner met een betaald pakket</p>
+            <p className="text-xs text-muted-foreground">
+              Vanaf het Kraam-abonnement kun je een eigen breedbeeldbanner (3:1) op je winkelpagina tonen.
+            </p>
+            <Button type="button" size="sm" onClick={onUpgrade} className="mt-1 gap-2 font-semibold">
+              Upgraden
+              <ArrowUpRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         <div className="max-w-[10rem]">
           <ImageUpload
             label="Logo / winkelfoto"

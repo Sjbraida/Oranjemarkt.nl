@@ -97,6 +97,7 @@ export const products = pgTable("products", {
   description: text("description").notNull().default(""),
   stock: integer("stock").notNull().default(1),
   status: text("status").notNull().default("published"),
+  featured: boolean("featured").notNull().default(false),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 })
 

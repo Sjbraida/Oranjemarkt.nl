@@ -2,18 +2,21 @@
 
 import { useState, useTransition } from "react"
 import Link from "next/link"
-import { Eye, Pencil, Trash2, Plus, X, Loader2, Copy, EyeOff } from "lucide-react"
+import { Eye, Pencil, Trash2, Plus, X, Loader2, Copy, EyeOff, Star, ArrowUpRight, Sparkles, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/image-upload"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format"
 import { categories } from "@/components/categories-section"
+import { type PlanCapabilities, formatMaxProducts } from "@/lib/plans"
 import {
   createProduct,
   updateProduct,
   deleteProduct,
   duplicateProduct,
   setProductStatus,
+  setProductFeatured,
+  generateProductDescription,
   type ProductInput,
 } from "@/app/actions/products"
 
@@ -28,6 +31,7 @@ export type ManagedProduct = {
   description: string
   stock: number
   status: "draft" | "published"
+  featured: boolean
 }
 
 // Gebruik dezelfde "hallen" als de rest van de bazaar zodat elk product een hal krijgt.
@@ -48,14 +52,25 @@ const EMPTY: ProductInput = {
 export function ProductManager({
   products,
   defaultCategory,
+  plan,
+  featuredUsed,
+  onUpgrade,
 }: {
   products: ManagedProduct[]
   defaultCategory: string
+  plan: PlanCapabilities
+  featuredUsed: number
+  onUpgrade?: () => void
 }) {
   const [editing, setEditing] = useState<ManagedProduct | null>(null)
   const [creating, setCreating] = useState(false)
   const [pendingId, setPendingId] = useState<number | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  const publishedCount = products.filter((p) => p.status === "published").length
+  const limitReached = publishedCount >= plan.maxProducts
+  const nearLimit = !limitReached && publishedCount >= Math.max(1, plan.maxProducts - 2)
 
   function openNew() {
     setEditing(null)
@@ -64,9 +79,12 @@ export function ProductManager({
 
   function runAction(id: number, fn: () => Promise<unknown>) {
     setPendingId(id)
+    setActionError(null)
     startTransition(async () => {
       try {
         await fn()
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : "Er ging iets mis")
       } finally {
         setPendingId(null)
       }
@@ -75,13 +93,53 @@ export function ProductManager({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">{`Producten (${products.length})`}</h2>
-        <Button onClick={openNew} className="gap-2 font-semibold">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">{`Producten (${products.length})`}</h2>
+          <p className="text-xs text-muted-foreground">
+            {publishedCount} van {formatMaxProducts(plan.maxProducts)} gepubliceerd
+            {plan.featuredProducts > 0 && ` · ${featuredUsed}/${plan.featuredProducts} uitgelicht`}
+          </p>
+        </div>
+        <Button onClick={openNew} disabled={limitReached} className="gap-2 font-semibold">
           <Plus className="h-4 w-4" />
           Nieuw product
         </Button>
       </div>
+
+      {limitReached && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Lock className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Productlimiet van {formatMaxProducts(plan.maxProducts)} bereikt
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Upgrade je abonnement om meer producten te publiceren, of zet een product op concept.
+              </p>
+            </div>
+          </div>
+          <Button size="sm" onClick={onUpgrade} className="gap-2 font-semibold">
+            Upgraden
+            <ArrowUpRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {nearLimit && (
+        <p className="mb-4 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+          Je nadert je limiet: nog {plan.maxProducts - publishedCount} product(en) te gaan op het {plan.name}-pakket.
+        </p>
+      )}
+
+      {actionError && (
+        <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {actionError}
+        </p>
+      )}
 
       <div className="overflow-hidden rounded-xl border border-border">
         {products.map((p, i) => (
@@ -97,6 +155,12 @@ export function ProductManager({
                 {p.status === "draft" && (
                   <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
                     Concept
+                  </span>
+                )}
+                {p.featured && (
+                  <span className="flex items-center gap-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
+                    <Star className="h-2.5 w-2.5 fill-primary" />
+                    Uitgelicht
                   </span>
                 )}
               </div>
@@ -131,6 +195,20 @@ export function ProductManager({
               >
                 {p.status === "published" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+              {plan.featuredProducts > 0 && (
+                <button
+                  onClick={() => runAction(p.id, () => setProductFeatured(p.id, !p.featured))}
+                  disabled={isPending && pendingId === p.id}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-md border border-border transition-colors hover:text-primary",
+                    p.featured ? "text-primary" : "text-muted-foreground",
+                  )}
+                  aria-label={p.featured ? "Niet meer uitlichten" : "Uitlichten"}
+                  title={p.featured ? "Uitgelicht — klik om te verwijderen" : "Product uitlichten"}
+                >
+                  <Star className={cn("h-4 w-4", p.featured && "fill-primary")} />
+                </button>
+              )}
               <button
                 onClick={() => runAction(p.id, () => duplicateProduct(p.id))}
                 disabled={isPending && pendingId === p.id}
@@ -171,6 +249,7 @@ export function ProductManager({
         <ProductDialog
           product={editing}
           defaultCategory={defaultCategory}
+          aiAssist={plan.aiAssist}
           onClose={() => {
             setCreating(false)
             setEditing(null)
@@ -184,12 +263,16 @@ export function ProductManager({
 function ProductDialog({
   product,
   defaultCategory,
+  aiAssist,
   onClose,
 }: {
   product: ManagedProduct | null
   defaultCategory: string
+  aiAssist: boolean
   onClose: () => void
 }) {
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
   const [form, setForm] = useState<ProductInput>(
     product
       ? {
@@ -218,6 +301,24 @@ function ProductDialog({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Er ging iets mis")
       setSubmitting(false)
+    }
+  }
+
+  async function generateDescription() {
+    setAiLoading(true)
+    setAiError(null)
+    try {
+      const { text } = await generateProductDescription({
+        name: form.name,
+        category: form.category,
+        price: form.price,
+        keywords: form.description,
+      })
+      setForm((f) => ({ ...f, description: text }))
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : "AI kon geen beschrijving maken")
+    } finally {
+      setAiLoading(false)
     }
   }
 
@@ -264,7 +365,20 @@ function ProductDialog({
             className="max-w-[12rem]"
           />
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground">Beschrijving</label>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <label className="block text-sm font-medium text-foreground">Beschrijving</label>
+              {aiAssist && (
+                <button
+                  type="button"
+                  onClick={generateDescription}
+                  disabled={aiLoading || !form.name.trim()}
+                  className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-50"
+                >
+                  {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  Schrijf met AI
+                </button>
+              )}
+            </div>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -272,6 +386,7 @@ function ProductDialog({
               placeholder="Beschrijf je product…"
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground outline-none focus:border-primary"
             />
+            {aiError && <p className="mt-1 text-xs text-destructive">{aiError}</p>}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-foreground">Status</label>
