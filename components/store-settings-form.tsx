@@ -7,10 +7,17 @@ import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/image-upload"
 import { updateStoreSettings } from "@/app/actions/store"
 
+export const STORE_TYPE_OPTIONS = [
+  { value: "kraam", label: "Kraam", hint: "Een marktkraam of kleine zelfstandige verkoper" },
+  { value: "winkel", label: "Winkel", hint: "Een (fysieke) winkel of speciaalzaak" },
+  { value: "bedrijf", label: "Bedrijf", hint: "Een groter bedrijf of merk" },
+] as const
+
 export type StoreSettings = {
   slug: string
   name: string
   category: string
+  type: string
   location: string
   description: string | null
   phone: string | null
@@ -34,6 +41,7 @@ export function StoreSettingsForm({
   const [form, setForm] = useState({
     name: store.name,
     category: store.category,
+    type: store.type ?? "kraam",
     location: store.location,
     description: store.description ?? "",
     phone: store.phone ?? "",
@@ -102,6 +110,34 @@ export function StoreSettingsForm({
         </div>
         <Field label="Winkelnaam" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
         <Field label="Categorie" value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-foreground">Soort verkoper</label>
+          <div className="grid grid-cols-3 gap-2">
+            {STORE_TYPE_OPTIONS.map((opt) => {
+              const active = form.type === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, type: opt.value })}
+                  aria-pressed={active}
+                  className={
+                    active
+                      ? "flex flex-col items-center gap-1 rounded-lg border-2 border-primary bg-primary/10 px-3 py-2.5 text-center transition-colors"
+                      : "flex flex-col items-center gap-1 rounded-lg border border-border bg-background px-3 py-2.5 text-center transition-colors hover:border-primary/40"
+                  }
+                >
+                  <span className={active ? "text-sm font-semibold text-primary" : "text-sm font-medium text-foreground"}>
+                    {opt.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {STORE_TYPE_OPTIONS.find((o) => o.value === form.type)?.hint}
+          </p>
+        </div>
         <Field label="Locatie" value={form.location} onChange={(v) => setForm({ ...form, location: v })} />
         <div>
           <label className="mb-1.5 block text-sm font-medium text-foreground">Beschrijving</label>

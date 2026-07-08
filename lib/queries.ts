@@ -53,6 +53,11 @@ export async function getAllStores() {
   return db.select().from(stores).orderBy(desc(planRank), desc(stores.rating))
 }
 
+// Winkels van één soort (kraam/winkel/bedrijf), gesorteerd op abonnementsrang en rating.
+export async function getStoresByType(type: "kraam" | "winkel" | "bedrijf") {
+  return db.select().from(stores).where(eq(stores.type, type)).orderBy(desc(planRank), desc(stores.rating))
+}
+
 export async function getStoreBySlug(slug: string) {
   const rows = await db.select().from(stores).where(eq(stores.slug, slug)).limit(1)
   return rows[0] ?? null

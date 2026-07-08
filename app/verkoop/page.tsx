@@ -111,6 +111,7 @@ export default async function VerkoopPage() {
         defaults={{
           name: store?.name ?? "",
           category: store?.category ?? "Algemeen",
+          type: store?.type ?? "kraam",
           location: store?.location ?? "",
           description: store?.description ?? "",
         }}

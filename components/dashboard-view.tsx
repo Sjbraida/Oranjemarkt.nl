@@ -34,6 +34,7 @@ type StoreInfo = {
   name: string
   slug: string
   category: string
+  type: string
   location: string
   rating: number
   followers: string
@@ -385,6 +386,7 @@ export function DashboardView({
               slug: store.slug,
               name: store.name,
               category: store.category,
+              type: store.type,
               location: store.location,
               description: store.description,
               phone: store.phone,

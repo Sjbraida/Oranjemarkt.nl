@@ -33,10 +33,13 @@ async function uniqueSlug(base: string) {
  * one yet, records the subscription, and updates the store's plan tier.
  * (Payment provider hookup is a later step; the flow is fully wired.)
  */
+const STORE_TYPES = ["kraam", "winkel", "bedrijf"] as const
+
 export async function subscribeToPlan(input: {
   plan: PlanKey
   storeName: string
   category: string
+  type?: string
   location: string
   description?: string
 }) {
@@ -89,6 +92,7 @@ export async function subscribeToPlan(input: {
         slug,
         name: storeName,
         category: input.category,
+        type: input.type && STORE_TYPES.includes(input.type as (typeof STORE_TYPES)[number]) ? input.type : "kraam",
         location: input.location,
         description: input.description ?? "",
         logoText,

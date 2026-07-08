@@ -11,7 +11,8 @@ type UserInfo = { name: string; email: string; image?: string | null } | null
 const primaryNav = [
   { label: "Categorieën", href: "/categorieen" },
   { label: "Kramen", href: "/kramen" },
-  { label: "Bedrijven", href: "/kramen" },
+  { label: "Winkels", href: "/winkels" },
+  { label: "Bedrijven", href: "/bedrijven" },
   { label: "Nieuwe producten", href: "/nieuw" },
   { label: "Top verkopers", href: "/top-verkopers" },
   { label: "Aanbiedingen", href: "/aanbiedingen" },

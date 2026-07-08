@@ -63,6 +63,8 @@ export const stores = pgTable("stores", {
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
   category: text("category").notNull(),
+  // Soort verkoper: "kraam" | "winkel" | "bedrijf"
+  type: text("type").notNull().default("kraam"),
   location: text("location").notNull(),
   rating: doublePrecision("rating").notNull().default(0),
   reviews: integer("reviews").notNull().default(0),
