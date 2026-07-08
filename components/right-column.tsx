@@ -32,7 +32,7 @@ export function RightColumn({ topSellers }: { topSellers: TopSeller[] }) {
             </li>
           ))}
         </ul>
-        <Button render={<Link href="/sign-up" />} className="mt-5 w-full justify-between gap-2 font-semibold">
+        <Button render={<Link href="/verkoop" />} className="mt-5 w-full justify-between gap-2 font-semibold">
           Kies jouw kraam
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -84,7 +84,7 @@ export function RightColumn({ topSellers }: { topSellers: TopSeller[] }) {
           ))}
         </ul>
         <Button
-          render={<Link href="/sign-up" />}
+          render={<Link href="/verkoop" />}
           variant="outline"
           className="mt-5 w-full border-border bg-transparent font-semibold hover:bg-sidebar-accent"
         >
