@@ -17,6 +17,7 @@ import {
   getProductsByStore,
   getStoreReviews,
   getStoreRating,
+  getPublicUser,
 } from "@/lib/queries"
 import { db } from "@/lib/db"
 import { stores } from "@/lib/db/schema"
@@ -35,6 +36,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const storeRows = await db.select().from(stores).where(eq(stores.id, product.storeId)).limit(1)
   const store = storeRows[0] ?? null
+  const seller = store ? await getPublicUser(store.ownerId) : null
 
   const [favorited, user, favoriteIds, related, dbReviews, ratingInfo] = await Promise.all([
     isFavorited(product.id),
@@ -155,21 +157,34 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               href={`/kramen/${store.slug}`}
               className="mt-2 flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary px-1 text-center text-[8px] font-bold leading-tight text-primary">
-                {store.logoText}
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary px-1 text-center text-[8px] font-bold leading-tight text-primary">
+                {seller?.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={seller.image || "/placeholder.svg"}
+                    alt={`Profielfoto van ${seller.name}`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : store.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={store.image || "/placeholder.svg"} alt={`Logo van ${store.name}`} className="h-full w-full object-cover" />
+                ) : (
+                  store.logoText
+                )}
               </span>
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <span className="flex items-center gap-1 font-semibold text-foreground">
                   {store.name}
-                  {store.badge?.toUpperCase() === "PREMIUM" && <BadgeCheck className="h-4 w-4 text-primary" />}
+                  {store.badge?.toUpperCase() === "PREMIUM" && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
                 </span>
+                {seller?.name ? <span className="truncate text-xs text-muted-foreground">Verkoper: {seller.name}</span> : null}
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Star className="h-3.5 w-3.5 fill-primary text-primary" />
                   {store.rating} · {store.location}
                 </span>
               </div>
-              <span className="ml-auto text-sm font-medium text-primary">Bekijk winkel</span>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <span className="ml-auto shrink-0 text-sm font-medium text-primary">Bekijk winkel</span>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </Link>
           ) : null}
         </div>

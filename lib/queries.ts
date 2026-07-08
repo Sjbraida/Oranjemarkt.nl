@@ -58,6 +58,17 @@ export async function getStoreBySlug(slug: string) {
   return rows[0] ?? null
 }
 
+/** Publiek profiel (naam + profielfoto) van een gebruiker, bijv. de verkoper achter een kraam. */
+export async function getPublicUser(userId: string | null | undefined) {
+  if (!userId) return null
+  const rows = await db
+    .select({ id: user.id, name: user.name, image: user.image })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1)
+  return rows[0] ?? null
+}
+
 export async function getNewestProducts(limit = 12) {
   return db.select().from(products).orderBy(desc(products.createdAt)).limit(limit)
 }
