@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Star } from "lucide-react"
+import { Star, Crown } from "lucide-react"
 
 export type StoreCardData = {
   id: number
@@ -31,10 +31,11 @@ export function StoreCard({ store }: { store: StoreCardData }) {
           <span
             className={
               isPremium
-                ? "absolute left-3 top-3 rounded-md bg-secondary px-2 py-1 text-[10px] font-bold tracking-wide text-primary"
-                : "absolute left-3 top-3 rounded-md bg-primary px-2 py-1 text-[10px] font-bold text-primary-foreground"
+                ? "absolute left-3 top-3 flex items-center gap-1 rounded-md bg-primary px-2 py-1 text-[10px] font-bold tracking-wide text-primary-foreground"
+                : "absolute left-3 top-3 rounded-md bg-secondary px-2 py-1 text-[10px] font-bold text-primary"
             }
           >
+            {isPremium && <Crown className="h-3 w-3" />}
             {store.badge}
           </span>
         )}
