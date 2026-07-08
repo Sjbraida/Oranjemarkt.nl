@@ -16,7 +16,7 @@ import {
 
 export const metadata = { title: "Verkopersdashboard | Oranjemarkt" }
 
-const VALID = ["overzicht", "producten", "bestellingen", "berichten", "promoties", "abonnement", "instellingen"] as const
+const VALID = ["overzicht", "producten", "bestellingen", "berichten", "abonnement", "instellingen"] as const
 type Section = (typeof VALID)[number]
 
 function weeklyRevenue(items: { price: number; quantity: number; createdAt: Date | string }[]) {
