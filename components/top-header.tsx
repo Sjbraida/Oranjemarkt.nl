@@ -111,6 +111,22 @@ export function TopHeader({
         <SearchForm />
       </div>
 
+      {/* Scrollbare snelnavigatie op mobiel/tablet */}
+      <nav
+        aria-label="Snelnavigatie"
+        className="flex items-center gap-2 overflow-x-auto border-t border-border px-4 py-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+      >
+        {primaryNav.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className="shrink-0 rounded-full border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
       <nav className="hidden items-center gap-1 border-t border-border px-6 lg:flex">
         {primaryNav.map((item) => (
           <Link
