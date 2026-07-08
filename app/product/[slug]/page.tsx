@@ -4,6 +4,7 @@ import { Star, ChevronRight, ShieldCheck, Truck, RotateCcw, BadgeCheck } from "l
 import { SiteShell } from "@/components/site-shell"
 import { FavoriteButton } from "@/components/favorite-button"
 import { ChatDialog } from "@/components/chat-dialog"
+import { UserAvatar } from "@/components/user-avatar"
 import { ProductGallery } from "@/components/product-gallery"
 import { ProductPurchase } from "@/components/product-purchase"
 import { ProductsGrid } from "@/components/products-grid"
@@ -51,12 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const reviews = dbReviews.slice(0, 4).map((r) => ({
     id: r.id,
     author: r.authorName,
-    initials: r.authorName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase(),
+    authorImage: r.authorImage,
     rating: r.rating,
     date: new Date(r.createdAt).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" }),
     text: r.text,
@@ -135,6 +131,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <ChatDialog
                 storeId={product.storeId}
                 sellerName={store.name}
+                sellerImage={seller?.image ?? store.image}
                 productName={product.name}
                 triggerClassName="flex-1"
                 isLoggedIn={!!user}
@@ -157,21 +154,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               href={`/kramen/${store.slug}`}
               className="mt-2 flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary px-1 text-center text-[8px] font-bold leading-tight text-primary">
-                {seller?.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={seller.image || "/placeholder.svg"}
-                    alt={`Profielfoto van ${seller.name}`}
-                    className="h-full w-full object-cover"
-                  />
-                ) : store.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={store.image || "/placeholder.svg"} alt={`Logo van ${store.name}`} className="h-full w-full object-cover" />
-                ) : (
-                  store.logoText
-                )}
-              </span>
+              <UserAvatar src={seller?.image ?? store.image} name={seller?.name ?? store.name} className="h-12 w-12" />
               <div className="flex min-w-0 flex-col">
                 <span className="flex items-center gap-1 font-semibold text-foreground">
                   {store.name}
@@ -208,9 +191,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {reviews.map((r) => (
             <li key={r.id} className="rounded-xl border border-border bg-card p-5">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-                  {r.initials}
-                </span>
+                <UserAvatar src={r.authorImage} name={r.author} className="h-10 w-10" />
                 <div className="flex-1">
                   <p className="font-semibold text-foreground">{r.author}</p>
                   <p className="text-xs text-muted-foreground">{r.date}</p>

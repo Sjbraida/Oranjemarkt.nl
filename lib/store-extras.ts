@@ -49,7 +49,7 @@ const REVIEW_SNIPPETS = [
 export type Review = {
   id: number
   author: string
-  initials: string
+  authorImage?: string | null
   rating: number
   date: string
   text: string
@@ -61,12 +61,6 @@ export function getStoreReviews(storeId: number, count = 6): Review[] {
   const now = Date.now()
   for (let i = 0; i < count; i++) {
     const name = DUTCH_NAMES[Math.floor(rand() * DUTCH_NAMES.length)]
-    const initials = name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase()
     const rating = rand() > 0.25 ? 5 : 4
     const daysAgo = Math.floor(rand() * 120) + 1
     const date = new Date(now - daysAgo * 86400000).toLocaleDateString("nl-NL", {
@@ -77,7 +71,7 @@ export function getStoreReviews(storeId: number, count = 6): Review[] {
     reviews.push({
       id: i,
       author: name,
-      initials,
+      authorImage: null,
       rating,
       date,
       text: REVIEW_SNIPPETS[Math.floor(rand() * REVIEW_SNIPPETS.length)],

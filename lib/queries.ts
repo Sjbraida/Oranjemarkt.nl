@@ -189,7 +189,22 @@ export async function getProductById(id: number) {
 // --- Reviews ---------------------------------------------------------------
 
 export async function getStoreReviews(storeId: number) {
-  return db.select().from(reviews).where(eq(reviews.storeId, storeId)).orderBy(desc(reviews.createdAt))
+  return db
+    .select({
+      id: reviews.id,
+      storeId: reviews.storeId,
+      productId: reviews.productId,
+      userId: reviews.userId,
+      authorName: reviews.authorName,
+      authorImage: user.image,
+      rating: reviews.rating,
+      text: reviews.text,
+      createdAt: reviews.createdAt,
+    })
+    .from(reviews)
+    .leftJoin(user, eq(reviews.userId, user.id))
+    .where(eq(reviews.storeId, storeId))
+    .orderBy(desc(reviews.createdAt))
 }
 
 export async function getStoreRating(storeId: number) {
@@ -344,6 +359,7 @@ export async function getConversationsForUser() {
       updatedAt: conversations.updatedAt,
       storeName: stores.name,
       storeLogo: stores.logoText,
+      storeImage: stores.image,
       storeOwnerId: stores.ownerId,
       storeSlug: stores.slug,
     })
@@ -367,23 +383,32 @@ export async function getInbox() {
     .where(inArray(messages.conversationId, ids))
     .orderBy(messages.createdAt)
 
-  // Buyer display names for conversations where the viewer is the seller.
-  const buyerIds = Array.from(new Set(convos.map((c) => c.buyerId)))
-  const buyerRows = buyerIds.length
-    ? await db.select({ id: user.id, name: user.name }).from(user).where(inArray(user.id, buyerIds))
+  // Profielfoto's + namen voor beide rollen (koper én verkoper) in één query.
+  const buyerIds = convos.map((c) => c.buyerId)
+  const ownerIds = convos.map((c) => c.storeOwnerId).filter((id): id is string => Boolean(id))
+  const peopleIds = Array.from(new Set([...buyerIds, ...ownerIds]))
+  const peopleRows = peopleIds.length
+    ? await db.select({ id: user.id, name: user.name, image: user.image }).from(user).where(inArray(user.id, peopleIds))
     : []
-  const buyerName = new Map(buyerRows.map((b) => [b.id, b.name]))
+  const userName = new Map(peopleRows.map((b) => [b.id, b.name]))
+  const userImage = new Map(peopleRows.map((b) => [b.id, b.image]))
 
   return convos.map((c) => {
     const viewerIsSeller = c.storeOwnerId === userId
     const thread = allMessages.filter((m) => m.conversationId === c.id)
     const last = thread[thread.length - 1]
     const unread = thread.some((m) => m.senderId !== userId && m.readAt === null)
-    const counterpartName = viewerIsSeller ? (buyerName.get(c.buyerId) ?? "Koper") : (c.storeName ?? "Verkoper")
+    const counterpartName = viewerIsSeller ? (userName.get(c.buyerId) ?? "Koper") : (c.storeName ?? "Verkoper")
+    // De echte foto van de tegenpartij: koper-foto voor de verkoper, en de
+    // eigenaar-foto (of anders de winkelfoto) voor de koper.
+    const counterpartImage = viewerIsSeller
+      ? (userImage.get(c.buyerId) ?? null)
+      : ((c.storeOwnerId ? userImage.get(c.storeOwnerId) : null) ?? c.storeImage ?? null)
     return {
       id: c.id,
       viewerIsSeller,
       counterpartName,
+      counterpartImage,
       storeSlug: c.storeSlug,
       preview: last?.body ?? "Nog geen berichten",
       updatedAt: c.updatedAt,

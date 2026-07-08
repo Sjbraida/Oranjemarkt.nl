@@ -6,26 +6,19 @@ import { useRouter } from "next/navigation"
 import { Send, Search, ChevronLeft, Store, MessagesSquare } from "lucide-react"
 import { sendMessage, markConversationRead } from "@/app/actions/messages"
 import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/components/user-avatar"
 
 export type InboxMessage = { id: number; mine: boolean; body: string; time: string }
 export type InboxConversation = {
   id: number
   name: string
+  image: string | null
   viewerIsSeller: boolean
   storeSlug: string | null
   preview: string
   unread: boolean
   updatedAt: string
   messages: InboxMessage[]
-}
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
 }
 
 function nowTime() {
@@ -135,9 +128,7 @@ export function MessagesView({ conversations }: { conversations: InboxConversati
                 c.id === activeId && "bg-secondary",
               )}
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-                {initials(c.name)}
-              </span>
+              <UserAvatar src={c.image} name={c.name} className="h-11 w-11" />
               <span className="min-w-0 flex-1">
                 <span className="flex items-center justify-between gap-2">
                   <span className="truncate text-sm font-semibold text-foreground">{c.name}</span>
@@ -163,9 +154,7 @@ export function MessagesView({ conversations }: { conversations: InboxConversati
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-            {initials(active.name)}
-          </span>
+          <UserAvatar src={active.image} name={active.name} className="h-10 w-10" />
           <div className="min-w-0">
             <p className="truncate font-semibold text-foreground">{active.name}</p>
             <p className="text-xs text-muted-foreground">

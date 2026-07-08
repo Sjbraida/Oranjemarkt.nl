@@ -63,12 +63,7 @@ export default async function DashboardPage({
     .map((c) => ({
       id: c.id,
       name: c.counterpartName,
-      initials: c.counterpartName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase(),
+      image: c.counterpartImage ?? null,
       preview: c.preview,
       time: c.updatedAt ? new Date(c.updatedAt).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }) : "",
       unread: c.unread,

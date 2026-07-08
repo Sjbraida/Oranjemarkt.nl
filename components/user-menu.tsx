@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronDown, LayoutDashboard, User, Heart, LogOut, Package, LifeBuoy, ShieldAlert } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
+import { UserAvatar } from "@/components/user-avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +18,6 @@ type UserInfo = { name: string; email: string; image?: string | null }
 
 export function UserMenu({ user, isAdmin = false }: { user: UserInfo; isAdmin?: boolean }) {
   const router = useRouter()
-  const initials = user.name
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
 
   const handleSignOut = async () => {
     await authClient.signOut()
@@ -33,14 +28,7 @@ export function UserMenu({ user, isAdmin = false }: { user: UserInfo; isAdmin?: 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex shrink-0 items-center gap-2 rounded-lg border border-transparent px-1 py-1 outline-none transition-colors hover:border-border focus-visible:border-border">
-        {user.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={user.image || "/placeholder.svg"} alt={user.name} className="h-9 w-9 rounded-full object-cover" />
-        ) : (
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-primary">
-            {initials}
-          </span>
-        )}
+        <UserAvatar src={user.image} name={user.name} className="h-9 w-9" />
         <span className="hidden flex-col items-start leading-tight sm:flex">
           <span className="text-[11px] text-muted-foreground">Mijn account</span>
           <span className="text-sm font-semibold text-foreground">{user.name}</span>
