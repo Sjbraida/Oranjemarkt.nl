@@ -1,10 +1,22 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { stores } from "@/lib/db/schema"
+import { stores, subscriptions } from "@/lib/db/schema"
 import { requireUser } from "@/lib/session"
-import { eq } from "drizzle-orm"
+import { getPlan } from "@/lib/plans"
+import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+
+/** Bepaalt het actieve plan van een gebruiker: abonnement gaat vóór het store-plan. */
+async function effectivePlan(userId: string, storePlan: string) {
+  const subs = await db
+    .select({ plan: subscriptions.plan })
+    .from(subscriptions)
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active")))
+    .orderBy(desc(subscriptions.createdAt))
+    .limit(1)
+  return getPlan(subs[0]?.plan ?? storePlan)
+}
 
 export async function updateStoreSettings(input: {
   name?: string
@@ -24,6 +36,10 @@ export async function updateStoreSettings(input: {
   if (rows.length === 0) throw new Error("Je hebt nog geen winkel")
   const s = rows[0]
 
+  // Banner is een betaalde functie: negeer wijzigingen als het plan het niet toestaat.
+  const plan = await effectivePlan(user.id, s.plan)
+  const nextBanner = plan.banner ? (input.bannerImage ?? s.bannerImage) : s.bannerImage
+
   await db
     .update(stores)
     .set({
@@ -32,7 +48,7 @@ export async function updateStoreSettings(input: {
       location: input.location ?? s.location,
       description: input.description ?? s.description,
       image: input.image?.trim() || s.image,
-      bannerImage: input.bannerImage ?? s.bannerImage,
+      bannerImage: nextBanner,
       phone: input.phone ?? s.phone,
       email: input.email ?? s.email,
       website: input.website ?? s.website,

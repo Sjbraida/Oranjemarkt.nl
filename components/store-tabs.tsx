@@ -82,8 +82,8 @@ type StoreMeta = {
   socials: { platform: string; handle: string }[]
 }
 
-const TABS = ["Alle producten", "Nieuw", "Aanbiedingen", "Reviews", "Over de winkel"] as const
-type Tab = (typeof TABS)[number]
+const BASE_TABS = ["Alle producten", "Uitgelicht", "Nieuw", "Aanbiedingen", "Reviews", "Over de winkel"] as const
+type Tab = (typeof BASE_TABS)[number]
 
 function Grid({
   products,

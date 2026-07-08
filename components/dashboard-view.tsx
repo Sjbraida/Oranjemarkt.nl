@@ -19,12 +19,15 @@ import {
   Crown,
   ArrowUpRight,
   ArrowRight,
+  Lock,
+  Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatPrice } from "@/lib/format"
 import { ProductManager, type ManagedProduct } from "@/components/product-manager"
 import { StoreSettingsForm } from "@/components/store-settings-form"
+import { type PlanCapabilities, formatMaxProducts } from "@/lib/plans"
 
 type StoreInfo = {
   id: number
@@ -101,6 +104,8 @@ export function DashboardView({
   messages,
   stats,
   subscription,
+  plan,
+  featuredUsed,
   initialSection = "overzicht",
 }: {
   store: StoreInfo
@@ -109,6 +114,8 @@ export function DashboardView({
   messages: MessagePreview[]
   stats: Stats
   subscription: { plan: string; price: number } | null
+  plan: PlanCapabilities
+  featuredUsed: number
   initialSection?: SectionId
 }) {
   const [section, setSection] = useState<SectionId>(initialSection)
@@ -145,7 +152,39 @@ export function DashboardView({
       </nav>
 
       <div className="min-w-0">
-        {section === "overzicht" && (
+        {section === "overzicht" && !plan.stats && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {statCards.map((c) => (
+                <div key={c.label} className="relative overflow-hidden rounded-xl border border-border bg-card p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-primary">
+                      <c.icon className="h-4 w-4" />
+                    </span>
+                  </div>
+                  <p className="mt-3 select-none text-xl font-bold text-foreground blur-sm">€ ••••</p>
+                  <p className="text-xs text-muted-foreground">{c.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center">
+              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary">
+                <Lock className="h-6 w-6" />
+              </span>
+              <h3 className="mt-4 text-lg font-bold text-foreground">Verkoopstatistieken zijn een betaalde functie</h3>
+              <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+                Upgrade naar een <span className="font-semibold text-foreground">Kraam</span>-abonnement of hoger om je
+                omzet, bestellingen en bezoekersstatistieken live te volgen.
+              </p>
+              <Button onClick={() => setSection("abonnement")} className="mt-4 gap-2 font-semibold">
+                Bekijk abonnementen
+                <ArrowUpRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {section === "overzicht" && plan.stats && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               {statCards.map((c) => (
@@ -221,7 +260,15 @@ export function DashboardView({
           </div>
         )}
 
-        {section === "producten" && <ProductManager products={products} defaultCategory={store.category} />}
+        {section === "producten" && (
+          <ProductManager
+            products={products}
+            defaultCategory={store.category}
+            plan={plan}
+            featuredUsed={featuredUsed}
+            onUpgrade={() => setSection("abonnement")}
+          />
+        )}
 
         {section === "bestellingen" && (
           <div>
@@ -357,6 +404,8 @@ export function DashboardView({
 
         {section === "instellingen" && (
           <StoreSettingsForm
+            allowBanner={plan.banner}
+            onUpgrade={() => setSection("abonnement")}
             store={{
               slug: store.slug,
               name: store.name,

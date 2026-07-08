@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Star } from "lucide-react"
 import { formatPrice } from "@/lib/format"
 import { FavoriteButton } from "@/components/favorite-button"
 
@@ -10,6 +11,7 @@ export type ProductCardData = {
   oldPrice: number | null
   discount: number | null
   image: string
+  featured?: boolean
 }
 
 export function ProductCard({
@@ -22,7 +24,13 @@ export function ProductCard({
   isLoggedIn: boolean
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40">
+    <article
+      className={
+        product.featured
+          ? "group relative overflow-hidden rounded-xl border border-primary/50 bg-card ring-1 ring-primary/30 transition-colors hover:border-primary"
+          : "group relative overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40"
+      }
+    >
       <Link href={`/product/${product.slug}`} className="block">
         <div className="relative aspect-square bg-secondary">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -34,6 +42,12 @@ export function ProductCard({
           {product.discount ? (
             <span className="absolute left-2 top-2 rounded-md bg-destructive px-1.5 py-0.5 text-[10px] font-bold text-white">
               {`-${product.discount}%`}
+            </span>
+          ) : null}
+          {product.featured ? (
+            <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+              <Star className="h-2.5 w-2.5 fill-current" />
+              Uitgelicht
             </span>
           ) : null}
         </div>
