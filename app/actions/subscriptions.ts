@@ -51,7 +51,7 @@ export async function subscribeToPlan(input: {
   if (!storeName) throw new Error("Winkelnaam is verplicht")
 
   // Badge en homepage-promotie worden automatisch bepaald door het plan.
-  const planBadge = planDef.premiumBadge ? "PREMIUM" : planDef.searchPriority >= 2 ? "TOP VERKOPER" : null
+  const planBadge = planDef.premiumBadge ? "BEDRIJF" : planDef.searchPriority >= 2 ? "TOP VERKOPER" : null
   const homepagePromo = planDef.homepagePromotion
 
   // Find existing store for this owner

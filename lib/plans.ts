@@ -60,7 +60,7 @@ export const PLANS = {
     aiAssist: false,
   },
   premium: {
-    name: "Premium",
+    name: "Bedrijf",
     price: 49.95,
     maxProducts: 100000,
     stats: true,
