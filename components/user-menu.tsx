@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ChevronDown, LayoutDashboard, User, Megaphone, Heart, LogOut, Package, LifeBuoy, ShieldAlert } from "lucide-react"
+import { ChevronDown, LayoutDashboard, User, Heart, LogOut, Package, LifeBuoy, ShieldAlert } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import {
   DropdownMenu,
@@ -61,9 +61,6 @@ export function UserMenu({ user, isAdmin = false }: { user: UserInfo; isAdmin?: 
         </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/bestellingen" />}>
           <Package className="mr-2 h-4 w-4" /> Mijn bestellingen
-        </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/adverteren" />}>
-          <Megaphone className="mr-2 h-4 w-4" /> Adverteren
         </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/favorieten" />}>
           <Heart className="mr-2 h-4 w-4" /> Favorieten

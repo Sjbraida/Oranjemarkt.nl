@@ -7,7 +7,6 @@ import {
   Package,
   ShoppingBag,
   MessageSquare,
-  Megaphone,
   CreditCard,
   Settings,
   TrendingUp,
@@ -67,7 +66,6 @@ const SECTIONS = [
   { id: "producten", label: "Producten", icon: Package },
   { id: "bestellingen", label: "Bestellingen", icon: ShoppingBag },
   { id: "berichten", label: "Berichten", icon: MessageSquare },
-  { id: "promoties", label: "Promoties", icon: Megaphone },
   { id: "abonnement", label: "Abonnement", icon: CreditCard },
   { id: "instellingen", label: "Instellingen", icon: Settings },
 ] as const
@@ -341,30 +339,6 @@ export function DashboardView({
                 ))}
               </ul>
             )}
-          </div>
-        )}
-
-        {section === "promoties" && (
-          <div>
-            <h2 className="mb-1 text-lg font-semibold text-foreground">Promoties</h2>
-            <p className="mb-4 text-sm text-muted-foreground">Geef je producten een boost en bereik meer kopers.</p>
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
-                  <Megaphone className="h-5 w-5" />
-                </span>
-                <div>
-                  <h3 className="font-semibold text-foreground">Adverteer je kraam of producten</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Kies uit product-boosts, uitgelichte plaatsing en homepage-banners op de advertentiepagina.
-                  </p>
-                  <Button render={<Link href="/adverteren" />} className="mt-4 gap-2 font-semibold">
-                    Naar adverteren
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 

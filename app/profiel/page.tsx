@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Heart, Megaphone, Store, MapPin, Star, Package } from "lucide-react"
+import { Heart, Store, MapPin, Star, Package } from "lucide-react"
 import { SiteShell } from "@/components/site-shell"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -22,7 +22,6 @@ export default async function ProfielPage() {
 
   const quickLinks = [
     { label: "Mijn bestellingen", href: "/bestellingen", icon: Package, desc: "Bekijk je aankopen" },
-    { label: "Adverteren", href: "/adverteren", icon: Megaphone, desc: "Promoot je winkel" },
     { label: "Favorieten", href: "/favorieten", icon: Heart, desc: `${favoriteIds.length} opgeslagen` },
   ]
 
