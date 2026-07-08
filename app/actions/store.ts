@@ -18,9 +18,12 @@ async function effectivePlan(userId: string, storePlan: string) {
   return getPlan(subs[0]?.plan ?? storePlan)
 }
 
+const STORE_TYPES = ["kraam", "winkel", "bedrijf"] as const
+
 export async function updateStoreSettings(input: {
   name?: string
   category?: string
+  type?: string
   location?: string
   description?: string
   image?: string
@@ -45,6 +48,7 @@ export async function updateStoreSettings(input: {
     .set({
       name: input.name?.trim() || s.name,
       category: input.category ?? s.category,
+      type: input.type && STORE_TYPES.includes(input.type as (typeof STORE_TYPES)[number]) ? input.type : s.type,
       location: input.location ?? s.location,
       description: input.description ?? s.description,
       image: input.image?.trim() || s.image,

@@ -20,6 +20,12 @@ export type PlanCard = {
   highlight: boolean
 }
 
+const STORE_TYPES = [
+  { value: "kraam", label: "Kraam" },
+  { value: "winkel", label: "Winkel" },
+  { value: "bedrijf", label: "Bedrijf" },
+] as const
+
 const CATEGORIES = [
   "Eten & Drinken",
   "Kleding & Mode",
@@ -43,7 +49,7 @@ export function SubscribePlans({
   isLoggedIn: boolean
   hasStore: boolean
   currentPlan: string | null
-  defaults: { name: string; category: string; location: string; description: string }
+  defaults: { name: string; category: string; type: string; location: string; description: string }
 }) {
   const router = useRouter()
   const [openPlan, setOpenPlan] = useState<PlanCard | null>(null)
@@ -71,6 +77,7 @@ export function SubscribePlans({
         plan: openPlan.key,
         storeName: form.name,
         category: form.category,
+        type: form.type,
         location: form.location,
         description: form.description,
       })
@@ -194,6 +201,29 @@ export function SubscribePlans({
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">Soort verkoper</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {STORE_TYPES.map((t) => {
+                    const active = form.type === t.value
+                    return (
+                      <button
+                        key={t.value}
+                        type="button"
+                        onClick={() => setForm({ ...form, type: t.value })}
+                        aria-pressed={active}
+                        className={
+                          active
+                            ? "rounded-lg border-2 border-primary bg-primary/10 px-2 py-2 text-sm font-semibold text-primary transition-colors"
+                            : "rounded-lg border border-border bg-background px-2 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+                        }
+                      >
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">Locatie</label>

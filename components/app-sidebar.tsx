@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation"
 import {
   Home,
   Store,
+  ShoppingBag,
+  Building2,
   LayoutGrid,
   TrendingUp,
   Sparkles,
@@ -23,7 +25,9 @@ import { Button } from "@/components/ui/button"
 const mainNav = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Categorieën", icon: LayoutGrid, href: "/categorieen" },
-  { label: "Alle kramen", icon: Store, href: "/kramen" },
+  { label: "Kramen", icon: Store, href: "/kramen" },
+  { label: "Winkels", icon: ShoppingBag, href: "/winkels" },
+  { label: "Bedrijven", icon: Building2, href: "/bedrijven" },
   { label: "Nieuwe producten", icon: Sparkles, href: "/nieuw" },
   { label: "Top verkopers", icon: TrendingUp, href: "/top-verkopers" },
   { label: "Aanbiedingen", icon: Tag, href: "/aanbiedingen", badge: "Nieuw" },

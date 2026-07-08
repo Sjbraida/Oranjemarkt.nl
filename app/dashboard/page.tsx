@@ -109,6 +109,7 @@ export default async function DashboardPage({
     name: store.name,
     slug: store.slug,
     category: store.category,
+    type: store.type,
     location: store.location,
     rating: store.rating,
     followers: store.followers,

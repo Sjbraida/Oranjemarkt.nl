@@ -6,6 +6,7 @@ export type StoreCardData = {
   slug: string
   name: string
   category: string
+  type?: string
   location: string
   rating: number
   reviews: number
@@ -16,8 +17,11 @@ export type StoreCardData = {
   image: string
 }
 
+const TYPE_LABELS: Record<string, string> = { kraam: "Kraam", winkel: "Winkel", bedrijf: "Bedrijf" }
+
 export function StoreCard({ store }: { store: StoreCardData }) {
   const isPremium = store.badge?.toUpperCase() === "PREMIUM"
+  const typeLabel = store.type ? TYPE_LABELS[store.type] : null
   return (
     <Link
       href={`/kramen/${store.slug}`}
@@ -53,7 +57,14 @@ export function StoreCard({ store }: { store: StoreCardData }) {
             <span className="text-xs text-muted-foreground">({store.reviews})</span>
           </span>
         </div>
-        <p className="text-sm font-medium text-primary">{store.category}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm font-medium text-primary">{store.category}</p>
+          {typeLabel && (
+            <span className="rounded-full border border-border bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {typeLabel}
+            </span>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">{store.location}</p>
         <div className="mt-2 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
           <span>{store.productCount} producten</span>
