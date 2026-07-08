@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Search, Ban, ShieldCheck, Crown } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { UserAvatar } from "@/components/user-avatar"
 import { cn } from "@/lib/utils"
 import { adminSetUserRole, adminSetUserBanned } from "@/app/actions/admin"
 import { SUPERADMIN_EMAIL, type Role } from "@/lib/roles"
@@ -11,6 +12,7 @@ export type AdminUserRow = {
   id: string
   name: string
   email: string
+  image: string | null
   role: string
   banned: boolean
 }
@@ -80,9 +82,7 @@ export function AdminUsers({ users, currentRole }: { users: AdminUserRow[]; curr
                   i !== filtered.length - 1 && "border-b border-border",
                 )}
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-primary">
-                  {u.name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
-                </span>
+                <UserAvatar src={u.image} name={u.name} className="h-9 w-9" />
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1 truncate text-sm font-medium text-foreground">
                     {u.name}

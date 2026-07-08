@@ -17,28 +17,28 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
 
   const stats = data ?? initialStats
 
-  // Op mobiel: kramen → bezoekers → abonnementen. Op desktop: kramen → abonnementen → bezoekers.
+  // Zelfde volgorde op mobiel en desktop: kramen → abonnementen → bezoekers nu online.
   const items = [
     {
       icon: Store,
       value: stats.activeStores.toLocaleString("nl-NL"),
       label: "Actieve kramen",
+      shortLabel: "Kramen",
       live: false,
-      mdOrder: "md:order-1",
-    },
-    {
-      icon: Users,
-      value: stats.liveVisitors.toLocaleString("nl-NL"),
-      label: "Bezoekers nu online",
-      live: true,
-      mdOrder: "md:order-3",
     },
     {
       icon: BadgeCheck,
       value: stats.activeSubscriptions.toLocaleString("nl-NL"),
       label: "Actieve abonnementen",
+      shortLabel: "Abonnementen",
       live: false,
-      mdOrder: "md:order-2",
+    },
+    {
+      icon: Users,
+      value: stats.liveVisitors.toLocaleString("nl-NL"),
+      label: "Bezoekers nu online",
+      shortLabel: "Online",
+      live: true,
     },
   ]
 
@@ -74,10 +74,10 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
             Open een kraam
           </Button>
         </div>
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3">
+        <div className="mt-2 flex flex-nowrap items-center gap-x-3 sm:gap-x-6">
           {items.map((s) => (
-            <div key={s.label} className={`flex items-center gap-2.5 ${s.mdOrder}`}>
-              <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-primary backdrop-blur">
+            <div key={s.label} className="flex items-center gap-2 sm:gap-2.5">
+              <span className="relative hidden h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-primary backdrop-blur sm:flex">
                 <s.icon className="h-4 w-4" />
                 {s.live && (
                   <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5" aria-hidden>
@@ -86,9 +86,20 @@ export function HeroSection({ initialStats }: { initialStats: HomeStats }) {
                   </span>
                 )}
               </span>
-              <div className="flex flex-col leading-none">
-                <span className="text-base font-bold text-foreground">{s.value}</span>
-                <span className="text-[11px] text-muted-foreground">{s.label}</span>
+              <div className="flex min-w-0 flex-col leading-none">
+                <span className="flex items-center gap-1.5 text-base font-bold text-foreground">
+                  {s.value}
+                  {s.live && (
+                    <span className="relative flex h-2 w-2 sm:hidden" aria-hidden>
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                    </span>
+                  )}
+                </span>
+                <span className="whitespace-nowrap text-[10px] text-muted-foreground sm:text-[11px]">
+                  <span className="sm:hidden">{s.shortLabel}</span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </span>
               </div>
             </div>
           ))}

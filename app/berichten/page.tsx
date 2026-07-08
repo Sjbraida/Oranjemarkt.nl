@@ -15,6 +15,7 @@ export default async function MessagesPage() {
   const conversations: InboxConversation[] = inbox.map((c) => ({
     id: c.id,
     name: c.counterpartName,
+    image: c.counterpartImage ?? null,
     viewerIsSeller: c.viewerIsSeller,
     storeSlug: c.storeSlug ?? null,
     preview: c.preview,

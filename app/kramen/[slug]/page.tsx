@@ -47,12 +47,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   const reviews = dbReviews.map((r) => ({
     id: r.id,
     author: r.authorName,
-    initials: r.authorName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase(),
+    authorImage: r.authorImage,
     rating: r.rating,
     date: new Date(r.createdAt).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" }),
     text: r.text,
@@ -150,7 +145,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
             <div className="flex flex-wrap gap-2">
               <FollowButton storeId={store.id} initialFollowing={following} isLoggedIn={!!user} />
-              <ChatDialog storeId={store.id} sellerName={store.name} triggerLabel="Chat" isLoggedIn={!!user} />
+              <ChatDialog
+              storeId={store.id}
+              sellerName={store.name}
+              sellerImage={seller?.image ?? store.image}
+              triggerLabel="Chat"
+              isLoggedIn={!!user}
+            />
               <ShareButton
                 title={store.name}
                 text={`Bekijk ${store.name} op Oranjemarkt`}

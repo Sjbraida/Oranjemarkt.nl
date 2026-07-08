@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button"
 import { formatPrice } from "@/lib/format"
 import { ProductManager, type ManagedProduct } from "@/components/product-manager"
 import { StoreSettingsForm } from "@/components/store-settings-form"
+import { UserAvatar } from "@/components/user-avatar"
 import { type PlanCapabilities, formatMaxProducts } from "@/lib/plans"
 
 type StoreInfo = {
@@ -48,7 +49,7 @@ type StoreInfo = {
   bannerImage: string | null
 }
 type Order = { id: string; product: string; buyer: string; date: string; amount: number; status: string }
-type MessagePreview = { id: number; name: string; initials: string; preview: string; time: string; unread: boolean }
+  type MessagePreview = { id: number; name: string; image: string | null; preview: string; time: string; unread: boolean }
 type Stats = {
   revenue: number
   orderCount: number
@@ -322,8 +323,8 @@ export function DashboardView({
                       i !== messages.length - 1 && "border-b border-border",
                     )}
                   >
-                    <span className="relative flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-                      {m.initials}
+                    <span className="relative">
+                      <UserAvatar src={m.image} name={m.name} className="h-11 w-11" />
                       {m.unread && (
                         <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-card bg-primary" />
                       )}

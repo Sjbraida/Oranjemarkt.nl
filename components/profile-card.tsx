@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Mail, CalendarDays, Loader2, Check, Camera, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/image-upload"
+import { UserAvatar } from "@/components/user-avatar"
 import { updateProfile } from "@/app/actions/profile"
 
 type ProfileCardProps = {
@@ -21,13 +22,6 @@ export function ProfileCard({ name, email, image, memberSince }: ProfileCardProp
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const initials = name
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
 
   async function save(e: React.FormEvent) {
     e.preventDefault()
@@ -94,14 +88,7 @@ export function ProfileCard({ name, email, image, memberSince }: ProfileCardProp
       ) : (
         <>
           <div className="flex items-center gap-4">
-            {image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={image || "/placeholder.svg"} alt={name} className="h-20 w-20 rounded-full object-cover" />
-            ) : (
-              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary text-2xl font-bold text-primary">
-                {initials}
-              </span>
-            )}
+            <UserAvatar src={image} name={name} className="h-20 w-20" />
             <div>
               <h2 className="text-2xl font-extrabold text-foreground">{name}</h2>
               <p className="text-sm text-muted-foreground">Lid van de digitale bazaar</p>

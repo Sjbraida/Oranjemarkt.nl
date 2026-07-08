@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { MessageSquare, X, Send, Loader2, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/components/user-avatar"
 import { startConversation, sendMessage, getStoreThread } from "@/app/actions/messages"
 
 type Message = { id: number; mine: boolean; text: string }
@@ -26,6 +27,7 @@ function quickQuestions(productName?: string): string[] {
 
 export function ChatDialog({
   sellerName,
+  sellerImage,
   productName,
   triggerLabel = "Chat met verkoper",
   triggerClassName,
@@ -34,6 +36,7 @@ export function ChatDialog({
   isLoggedIn,
 }: {
   sellerName: string
+  sellerImage?: string | null
   productName?: string
   triggerLabel?: string
   triggerClassName?: string
@@ -124,9 +127,7 @@ export function ChatDialog({
           <div className="relative flex h-[85vh] w-full flex-col overflow-hidden rounded-t-2xl border border-border bg-card shadow-2xl sm:h-[560px] sm:max-w-sm sm:rounded-2xl">
             <div className="flex items-center justify-between border-b border-border p-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-                  {sellerName.slice(0, 2).toUpperCase()}
-                </span>
+                <UserAvatar src={sellerImage} name={sellerName} className="h-10 w-10" />
                 <div>
                   <p className="font-semibold text-foreground">{sellerName}</p>
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Star, Clock, MapPin, AtSign, Link as LinkIcon, Globe, PackageOpen, Loader2 } from "lucide-react"
 import { ProductCard, type ProductCardData } from "@/components/product-card"
+import { UserAvatar } from "@/components/user-avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { submitReview } from "@/app/actions/reviews"
@@ -223,9 +224,7 @@ export function StoreTabs({
             {reviews.map((r) => (
               <li key={r.id} className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
-                    {r.initials}
-                  </span>
+                  <UserAvatar src={r.authorImage} name={r.author} className="h-10 w-10" />
                   <div className="flex-1">
                     <p className="font-semibold text-foreground">{r.author}</p>
                     <p className="text-xs text-muted-foreground">{r.date}</p>

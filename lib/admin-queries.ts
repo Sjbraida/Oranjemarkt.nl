@@ -115,6 +115,7 @@ export async function getAllUsersAdmin() {
       id: user.id,
       name: user.name,
       email: user.email,
+      image: user.image,
       role: user.role,
       banned: user.banned,
       createdAt: user.createdAt,
